@@ -1,0 +1,31 @@
+Haskell Active Literate Programming -- release 0.1
+
+Runs specially marked lines from a literate Haskell file in the
+context of the definitions in the file, and puts their output/result
+underneath.
+
+Any lines beginning with ") " are treated as input lines to ghci, with
+the result, value, or interpreter error printed below on lines
+beginning with "| ". Any existing output lines are overwritten. Python
+doctest style functionality should be easy to build by using diff
+instead.
+
+To run it, type M-i in an emacs buffer. The buffer must compile
+cleanly as literate Haskell and define the module Main.
+
+To install it, put ghci-halp.sh wherever you like, edit the definition
+of halp-helpers-directory in halp.el to refer to it, and set up your
+.emacs to load halp.el. Something like this is nice for testing:
+
+(defun rl ()
+  (interactive)
+  (load-file "halp.el"))
+
+There's also a similar experiment with "literate shellscripts".
+
+
+Authors:
+
+Darius Bacon <darius@accesscom.com>
+Brandon Moore
+Evan Murphy
