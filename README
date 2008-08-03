@@ -10,8 +10,9 @@ beginning with "| ". Any existing output lines are overwritten. Python
 doctest style functionality should be easy to build by using diff
 instead.
 
-To run it, type M-i in an emacs buffer. The buffer must compile
-cleanly as literate Haskell and define the module Main.
+To try it out, first install halp.el as described below. Then visit a
+suitable file, such as sample.lhs in this directory, and hit M-i. The
+buffer must compile cleanly as literate Haskell.
 
 To install it, put ghci-halp.sh wherever you like, edit the definition
 of halp-helpers-directory in halp.el to refer to it, and set up your
@@ -21,7 +22,9 @@ of halp-helpers-directory in halp.el to refer to it, and set up your
   (interactive)
   (load-file "halp.el"))
 
-There's also a similar experiment with "literate shellscripts".
+There's also a similar experiment in 'literate shell scripts': try
+visiting sample.sh. (This needs sh-halp.sh to be in whatever directory
+you installed ghci-halp.sh.)
 
 
 Authors:
