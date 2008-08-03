@@ -16,11 +16,8 @@ buffer must compile cleanly as literate Haskell.
 
 To install it, put ghci-halp.sh wherever you like, edit the definition
 of halp-helpers-directory in halp.el to refer to it, and set up your
-.emacs to load halp.el. Something like this is nice for testing:
-
-(defun rl ()
-  (interactive)
-  (load-file "halp.el"))
+.emacs to load halp.el. You will need Emacs haskell-mode installed
+already.
 
 There's also a similar experiment in 'literate shell scripts': try
 visiting sample.sh. (This needs sh-halp.sh to be in whatever directory
