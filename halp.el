@@ -3,6 +3,14 @@
 (defvar halp-helpers-directory "/Users/darius/git/halp/"
   "Directory where Halp helper scripts are installed.")
 
+(defun halp-add-hook (hook map-name key helper-command)
+  (add-hook hook
+            `(lambda ()
+               (define-key ,map-name ',key
+                 (lambda ()
+                   (interactive)
+                   (halp-update ',helper-command))))))
+
 (halp-add-hook 'sh-mode-hook 'sh-mode-map
                "\M-i" (concat halp-helpers-directory "sh-halp.sh"))
 
@@ -51,13 +59,5 @@
     (insert-buffer output)))
 
 ;; Wrap-up
-
-(defun halp-add-hook (hook map-name key helper-command)
-  (add-hook hook
-            `(lambda ()
-               (define-key ,map-name ',key
-                 (lambda ()
-                   (interactive)
-                   (halp-update ',helper-command))))))
 
 (provide 'halp)
