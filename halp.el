@@ -1,11 +1,22 @@
-; Copyright 2006 by Darius Bacon
-; Distributed under the terms of the MIT X License, found at
-; http://www.opensource.org/licenses/mit-license.php
+;; NOTE: You need to change the following variable to the directory
+;; containing this file:
+(defvar halp-helpers-directory "/Users/darius/git/halp/"
+  "Directory where Halp helper scripts are installed.")
+
+(halp-add-hook 'sh-mode-hook 'sh-mode-map
+               "\M-i" (concat halp-helpers-directory "sh-halp.sh"))
+
+(halp-add-hook 'haskell-mode-hook 'haskell-mode-map
+               "\M-i" (concat halp-helpers-directory "ghci-halp.sh"))
+
+
+;; The rest of this file shouldn't need editing.
+
+;; Copyright 2006 Darius Bacon <darius@wry.me>
+;; Distributed under the terms of the MIT X License, found at
+;; http://www.opensource.org/licenses/mit-license.php
 
 (require 'cl)
-
-(defvar halp-helpers-directory "~/src/halp/"
-  "Directory where Halp helper scripts are installed.")
 
 (defun halp-update (command)
   "Update the current buffer using an external helper program."
@@ -48,11 +59,5 @@
                  (lambda ()
                    (interactive)
                    (halp-update ',helper-command))))))
-
-(halp-add-hook 'sh-mode-hook 'sh-mode-map
-               "\M-i" (concat halp-helpers-directory "sh-halp.sh"))
-
-(halp-add-hook 'haskell-mode-hook 'haskell-mode-map
-               "\M-i" (concat halp-helpers-directory "ghci-halp.sh"))
 
 (provide 'halp)
