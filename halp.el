@@ -54,9 +54,10 @@
   ;; You could get the same effect, more easily, by setting
   ;; call-process-region's output buffer to t. (Commented out.)  But
   ;; we'll soon want to update things more intelligently.
-  (save-excursion
+  (let ((p (point)))
     (erase-buffer)
-    (insert-buffer output)))
+    (insert-buffer output)
+    (goto-char p)))
 
 ;; Wrap-up
 
