@@ -40,3 +40,6 @@ OK, a little bit cleverer now:
 
 ) findAbove 6 15
 | (8,15)
+
+(Pardon the horrible code; even I can write better, but the idea was
+(to play with Halp as a tool and not focus on code quality.)
