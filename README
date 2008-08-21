@@ -14,10 +14,10 @@ To try it out, first install halp.el as described below. Then visit a
 suitable file, such as sample.lhs in this directory, and hit M-i. The
 buffer must compile cleanly as literate Haskell.
 
-To install it, put ghci-halp.sh wherever you like, edit the definition
+To install it, put ghcihalp.py wherever you like, edit the definition
 of halp-helpers-directory in halp.el to refer to it, and set up your
 .emacs to load halp.el. You will need Emacs haskell-mode installed
-already.
+already, and Python >= 2.3 (I think).
 
 There's also a similar experiment in 'literate shell scripts': try
 visiting sample.sh. (This needs sh-halp.sh to be in whatever directory

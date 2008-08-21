@@ -15,7 +15,7 @@
                "\M-i" (concat halp-helpers-directory "sh-halp.sh"))
 
 (halp-add-hook 'haskell-mode-hook 'haskell-mode-map
-               "\M-i" (concat halp-helpers-directory "ghci-halp.sh"))
+               "\M-i" (concat halp-helpers-directory "ghcihalp.py"))
 
 
 ;; The rest of this file shouldn't need editing.
