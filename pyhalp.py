@@ -28,15 +28,15 @@ for line in input.split('\n'):
     if line.startswith('#| '):
         pass
     elif line.startswith('## '):
-        output.append(line + '\n')
+        output.append(line)
         expr = line[len('## '):]
         try:
             result = repr(eval(expr, mod_dict))
         except:
             # _, exception, _ = sys.exc_info()
             result = traceback.format_exc()
-        output.append('%s\n' % format_result(result))
+        output.append(format_result(result))
     else:
-        output.append(line + '\n')
+        output.append(line)
 
-sys.stdout.write(''.join(output))
+sys.stdout.write('\n'.join(output))
