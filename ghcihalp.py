@@ -12,20 +12,25 @@ import tempfile
 
 dbg = False
 
-input = [line for line in sys.stdin if not line.startswith('| ')]
+ext = sys.argv[1]
+
+input = [line for line in sys.stdin if not line.startswith('-- | ')]
 if input and not input[-1].endswith('\n'):
     input[-1] += '\n'
 input.append('\n')
-input.append('> aouhtnuoeahn = 0 -- Make sure the file has *some* code.\n')
+if ext == '.hs':
+    input.append('aouhtnuoeahn = 0 -- Make sure the file has *some* code.\n')
+else:
+    input.append('> aouhtnuoeahn = 0 -- Make sure the file has *some* code.\n')
 
 module_name = 'Main'
 defn_lines = []
 eval_line_numbers = []
 eval_lines = []
 for i, line in enumerate(input):
-    if line.startswith(')'):
+    if line.startswith('--- '):
         eval_line_numbers.append(i+1)
-        eval_lines.append(line[1:])
+        eval_lines.append(line[len('--- '):])
     else:
         m = re.search(r'module (.*) where', line) # TODO: more specific
         if m:
@@ -36,7 +41,7 @@ if dbg:
     print eval_line_numbers
     print ''.join(eval_lines)
 
-fd, main_lhs = tempfile.mkstemp('.lhs')
+fd, main_lhs = tempfile.mkstemp(ext)
 try:
     os.write(fd, ''.join(defn_lines))
     os.close(fd)
@@ -70,11 +75,11 @@ for j, r in enumerate(result_lines):
         output_line_num = (error_line_num
                            + count(lnum < error_line_num
                                    for lnum in eval_line_numbers))
-        output.insert(output_line_num, '| At column %s:\n' % m.group(2))
+        output.insert(output_line_num, '-- | At column %s:\n' % m.group(2))
         output_line_num += 1
         for plaint_line in result_lines[j+1:]:
             if plaint_line.startswith('Failed, modules loaded:'): break
-            output.insert(output_line_num, '| %s\n' % plaint_line)
+            output.insert(output_line_num, '-- | %s\n' % plaint_line)
             output_line_num += 1
         break
     if r.startswith(prompt):
@@ -83,7 +88,7 @@ for j, r in enumerate(result_lines):
             if r.startswith(prompt):
                 result = r[len(prompt):]
                 if result.startswith('Leaving GHCi.'): break
-                output.insert(eval_line_numbers[i] + i, '| %s\n' % result)
+                output.insert(eval_line_numbers[i] + i, '-- | %s\n' % result)
                 i += 1
         break
 

@@ -3,19 +3,22 @@
 (defvar halp-helpers-directory "/Users/darius/git/halp/"
   "Directory where Halp helper scripts are installed.")
 
-(defun halp-add-hook (hook map-name key helper-command)
+(defun halp-add-hook (hook map-name key helper-command args)
   (add-hook hook
             `(lambda ()
                (define-key ,map-name ',key
                  (lambda ()
                    (interactive)
-                   (halp-update ',helper-command))))))
+                   (halp-update ',helper-command ',args))))))
 
 (halp-add-hook 'sh-mode-hook 'sh-mode-map
-               "\M-i" (concat halp-helpers-directory "sh-halp.sh"))
+               "\M-i" (concat halp-helpers-directory "sh-halp.sh") '())
 
 (halp-add-hook 'haskell-mode-hook 'haskell-mode-map
-               "\M-i" (concat halp-helpers-directory "ghcihalp.py"))
+               "\M-i" (concat halp-helpers-directory "ghcihalp.py") '(".hs"))
+
+(halp-add-hook 'literate-haskell-mode-hook 'literate-haskell-mode-map
+               "\M-i" (concat halp-helpers-directory "ghcihalp.py") '(".lhs"))
 
 
 ;; The rest of this file shouldn't need editing.
@@ -26,13 +29,14 @@
 
 (require 'cl)
 
-(defun halp-update (command)
+(defun halp-update (command args)
   "Update the current buffer using an external helper program."
   (interactive)
   (let ((output (halp-get-output-buffer)))
 ;;    (call-process-region (point-min) (point-max) "cat" t t)
-    (let ((rc (call-process-region (point-min) (point-max)
-                                   command nil output)))
+    (let ((rc (apply 'call-process-region
+                     (point-min) (point-max) command nil output nil 
+                     args)))
       (cond ((zerop rc)                 ;success
              (halp-update-current-buffer output)
              (message "hooray"))
