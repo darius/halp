@@ -12,16 +12,17 @@ instead.
 
 To try it out, first install halp.el as described below. Then visit a
 suitable file, such as sample.lhs in this directory, and hit M-i. The
-buffer must compile cleanly as literate Haskell.
+buffer must compile cleanly as literate Haskell (or plain Haskell if
+it's a .hs file).
 
 To install it, put ghcihalp.py wherever you like, edit the definition
 of halp-helpers-directory in halp.el to refer to it, and set up your
 .emacs to load halp.el. You will need Emacs haskell-mode installed
 already, and Python >= 2.3 (I think).
 
-There's also a similar experiment in 'literate shell scripts': try
-visiting sample.sh. (This needs sh-halp.sh to be in whatever directory
-you installed ghci-halp.sh.)
+There are also similar experiments in Python and 'literate shell
+scripts': try visiting sample.py or sample.sh. (These need pyhalp.py
+or sh-halp.sh to be in whatever directory you installed ghci-halp.sh.)
 
 
 Authors:
