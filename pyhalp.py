@@ -5,17 +5,23 @@ same sourcefile with evaluation results placed inline.
 """
 
 import sys
+import traceback
 
 dbg = False
 
-ext = '.py'
-out = '#| '
-
 input = sys.stdin.read()
 
-md = {'__name__': '', '__doc__': None, '__file__': ''}
+mod_dict = {'__name__': '', '__file__': '<stdin>', '__doc__': None}
 
-exec input in md
+def format_result(s):
+    return '#| %s' % s.replace('\n', '\n#| ')
+
+try:
+    exec input in mod_dict
+except:
+    tb = traceback.format_exc()
+    sys.stdout.write('%s\n%s' % (format_result(tb), input))
+    sys.exit(0)
 
 output = []
 for line in input.split('\n'):
@@ -24,7 +30,12 @@ for line in input.split('\n'):
     elif line.startswith('## '):
         output.append(line + '\n')
         expr = line[len('## '):]
-        output.append('#| %r\n' % eval(expr, md)) # XXX
+        try:
+            result = repr(eval(expr, mod_dict))
+        except:
+            # _, exception, _ = sys.exc_info()
+            result = traceback.format_exc()
+        output.append('%s\n' % format_result(result))
     else:
         output.append(line + '\n')
 
