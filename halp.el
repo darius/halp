@@ -14,6 +14,9 @@
 (halp-add-hook 'sh-mode-hook 'sh-mode-map
                "\M-i" (concat halp-helpers-directory "sh-halp.sh") '())
 
+(halp-add-hook 'python-mode-hook 'python-mode-map
+               "\M-i" (concat halp-helpers-directory "pyhalp.py") '())
+
 (halp-add-hook 'haskell-mode-hook 'haskell-mode-map
                "\M-i" (concat halp-helpers-directory "ghcihalp.py") '(".hs"))
 
