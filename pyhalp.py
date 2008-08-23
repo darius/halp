@@ -13,7 +13,7 @@ out = '#| '
 
 input = sys.stdin.read()
 
-md = {}
+md = {'__name__': '', '__doc__': None, '__file__': ''}
 
 exec input in md
 
