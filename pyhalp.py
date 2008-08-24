@@ -16,11 +16,18 @@ mod_dict = {'__name__': '', '__file__': '<stdin>', '__doc__': None}
 def format_result(s):
     return '#| %s' % s.replace('\n', '\n#| ')
 
+def get_lineno((etype, value, tb)):
+    if etype is SyntaxError and value.filename == '<string>':
+        return value.lineno
+    return 1
+
 try:
     exec input in mod_dict
 except:
-    tb = traceback.format_exc()
-    sys.stdout.write('%s\n%s' % (format_result(tb), input))
+    lineno = get_lineno(sys.exc_info())
+    lines = input.split('\n')
+    lines.insert(lineno - 1, format_result(traceback.format_exc()))
+    sys.stdout.write('\n'.join(lines))
     sys.exit(0)
 
 output = []
@@ -33,7 +40,6 @@ for line in input.split('\n'):
         try:
             result = repr(eval(expr, mod_dict))
         except:
-            # _, exception, _ = sys.exc_info()
             result = traceback.format_exc()
         output.append(format_result(result))
     else:
