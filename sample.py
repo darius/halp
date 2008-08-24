@@ -3,7 +3,7 @@
 import operator
 
 def fact(n):
-    return reduce(operator.mul, range(1, n+1), 1)
+    return 1 if n <= 0 else n * fact(n - 1)
 
 # When you hit M-i you should see '#| 120' appear below the following line:
 
