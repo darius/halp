@@ -19,6 +19,11 @@ def format_result(s):
 def get_lineno((etype, value, tb)):
     if etype is SyntaxError and value.filename == '<string>':
         return value.lineno
+    items = traceback.extract_tb(tb)
+    if items:
+        filename, lineno, func_name, text = items[-1]
+        if filename == '<string>':
+            return lineno
     return 1
 
 try:
