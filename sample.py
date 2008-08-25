@@ -1,7 +1,5 @@
 # Hello, this is a sample. 
 
-import operator
-
 def fact(n):
     if n <= 0:
         return 1
