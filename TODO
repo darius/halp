@@ -1,0 +1,74 @@
+don't move the cursor, really. and:
+move cursor to exact position reported by compiler error message
+
+line numbers in tracebacks can be wrong (since we insert/delete lines)
+
+get source lines back into tracebacks
+  - set __loader__ variable? see linecache.py:updatecache()
+  - write to a file and import that?
+
+get module name back into tracebacks
+
+tush variant
+
+more concise/useful Python error messages
+
+doctest support -- mark an output as 'correct', and tell me when
+there's an error
+
+single-stepping of some sort
+
+test isolation
+
+don't dirty the buffer unnecessarily
+
+catch writes to stdout
+
+allow multiline examples (and outputs?)
+
+syntax coloring
+
+allow reading previous round's output, to give us state and make this
+a means of actual interaction with a program
+
+support "literate python"? noweb?
+
+for Haskell, handle compiler error messages for example lines
+
+rewrite in elisp?
+
+insert results asynchronously; don't hang up emacs
+
+lisp support
+
+persistent process to avoid startup time, if possible
+
+
+
+DONE:
+
+don't move the cursor
+(sort of done)
+
+less fragility wrt underlying interpreter version, etc.
+(done, I guess)
+
+implement in python instead of a shell mishmash
+
+handle compiler error messages vaguely intelligently
+
+do something for plain old haskell mode (non-literate)
+
+literate-python support
+
+fix bug: pyhalp was adding a newline at EOF every time
+
+error messages that appear at the point of the error
+
+use named functions for keybindings in halp.el (not lambdas)
+
+bug: on syntax error, the tracebacks pile up if you keep hitting M-i
+
+python-mode-map is py-mode-map in the python-mode that comes with Python
+
+make install more automatic
