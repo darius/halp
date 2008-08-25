@@ -59,7 +59,7 @@ handle compiler error messages vaguely intelligently
 
 do something for plain old haskell mode (non-literate)
 
-literate-python support
+python support
 
 fix bug: pyhalp was adding a newline at EOF every time
 
