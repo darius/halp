@@ -1,31 +1,34 @@
-Haskell Active Literate Programming -- release 0.1
+HALP
 
-Runs specially marked lines from a literate Haskell file in the
-context of the definitions in the file, and puts their output/result
-underneath.
-
-Any lines beginning with ") " are treated as input lines to ghci, with
-the result, value, or interpreter error printed below on lines
-beginning with "| ". Any existing output lines are overwritten. Python
-doctest style functionality should be easy to build by using diff
-instead.
+With Halp, one keystroke executes all specially-marked lines from a
+buffer and inserts the results inline. It can do this for source code
+in Python, Haskell (literate or illiterate), or sh. This helps you
+interactively test your programs as you write them -- like a
+read-eval-print loop, but different.
 
 To try it out, first install halp.el as described below. Then visit a
-suitable file, such as sample.lhs in this directory, and hit M-i. The
-buffer must compile cleanly as literate Haskell (or plain Haskell if
-it's a .hs file).
-
-To install it, put ghcihalp.py wherever you like, edit the definition
-of halp-helpers-directory in halp.el to refer to it, and set up your
-.emacs to load halp.el. You will need Emacs haskell-mode installed
-already, and Python >= 2.3 (I think).
-
-There are also similar experiments in Python and 'literate shell
-scripts': try visiting sample.py or sample.sh. (These need pyhalp.py
-or sh-halp.sh to be in whatever directory you installed ghci-halp.sh.)
+suitable file, (like sample.py, sample.lhs, or sample.sh in this
+directory), and hit M-i. These sample files will explain what you can
+do and how it works. (XXX actually they don't yet)
 
 
-Authors:
+INSTALLING
+
+First, edit halp.el, setting halp-helpers-directory to this directory
+(the directory containing these files).
+
+Then add this line to your .emacs:
+
+  (load-file "/path/to/halp.el")
+
+or just do M-x load-file halp.el.
+
+You will need python-mode, or haskell-mode, etc., installed already
+(whichever of these you intend to use with Halp). You will also need
+Python >= 2.3 (I think). This was tested with Python 2.5 and Emacs 22.
+
+
+AUTHORS
 
 Darius Bacon <darius@wry.me>
 Brandon Moore
