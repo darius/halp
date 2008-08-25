@@ -3,26 +3,16 @@
 (defvar halp-helpers-directory "/Users/darius/git/halp/"
   "Directory where Halp helper scripts are installed.")
 
-(defun halp-add-hook (hook map-name key helper-command args)
+(defun halp-add-hook (hook map-name key halp-update-function)
   (add-hook hook
             `(lambda ()
-               (define-key ,map-name ',key
-                 (lambda ()
-                   (interactive)
-                   (halp-update ',helper-command ',args))))))
+               (define-key ,map-name ',key ',halp-update-function))))
 
-(halp-add-hook 'sh-mode-hook 'sh-mode-map
-               "\M-i" (concat halp-helpers-directory "sh-halp.sh") '())
-
-(halp-add-hook 'python-mode-hook 'python-mode-map
-               "\M-i" (concat halp-helpers-directory "pyhalp.py") '())
-
-(halp-add-hook 'haskell-mode-hook 'haskell-mode-map
-               "\M-i" (concat halp-helpers-directory "ghcihalp.py") '(".hs"))
-
-(halp-add-hook 'literate-haskell-mode-hook 'literate-haskell-mode-map
-               "\M-i" (concat halp-helpers-directory "ghcihalp.py") '(".lhs"))
-
+(halp-add-hook 'sh-mode-hook 'sh-mode-map "\M-i" 'halp-update-sh)
+(halp-add-hook 'python-mode-hook 'python-mode-map "\M-i" 'halp-update-python)
+(halp-add-hook 'haskell-mode-hook 'haskell-mode-map "\M-i" 'halp-update-haskell)
+(halp-add-hook 'literate-haskell-mode-hook 'literate-haskell-mode-map "\M-i"
+               'halp-update-literate-haskell)
 
 ;; The rest of this file shouldn't need editing.
 
@@ -31,6 +21,22 @@
 ;; http://www.opensource.org/licenses/mit-license.php
 
 (require 'cl)
+
+(defun halp-update-sh ()
+  (interactive)
+  (halp-update (concat halp-helpers-directory "sh-halp.sh") '()))
+
+(defun halp-update-python ()
+  (interactive)
+  (halp-update (concat halp-helpers-directory "pyhalp.py") '()))
+
+(defun halp-update-haskell ()
+  (interactive)
+  (halp-update (concat halp-helpers-directory "ghcihalp.py") '(".hs")))
+
+(defun halp-update-literate-haskell ()
+  (interactive)
+  (halp-update (concat halp-helpers-directory "ghcihalp.py") '(".lhs")))
 
 (defun halp-update (command args)
   "Update the current buffer using an external helper program."
