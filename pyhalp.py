@@ -9,10 +9,6 @@ import traceback
 
 dbg = False
 
-input = sys.stdin.read()
-
-mod_dict = {'__name__': '', '__file__': '<stdin>', '__doc__': None}
-
 def format_result(s):
     return '#| %s' % s.replace('\n', '\n#| ')
 
@@ -25,6 +21,10 @@ def get_lineno((etype, value, tb)):
         if filename == '<string>':
             return lineno
     return 1
+
+input = sys.stdin.read()
+
+mod_dict = {'__name__': '', '__file__': '<stdin>', '__doc__': None}
 
 try:
     exec input in mod_dict
