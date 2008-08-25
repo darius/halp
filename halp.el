@@ -1,42 +1,64 @@
-;; NOTE: You need to change the following variable to the directory
-;; containing this file:
-(defvar halp-helpers-directory "/Users/darius/git/halp/"
+;; Copyright 2006, 2008 Darius Bacon <darius@wry.me>
+;; Distributed under the terms of the MIT X License, found at
+;; http://www.opensource.org/licenses/mit-license.php
+
+;; If for some reason you move the helper programs like pyhalp.py to a
+;; different directory (not the one this file is in) then set this
+;; variable:
+(defvar halp-helpers-directory nil
   "Directory where Halp helper scripts are installed.")
+
+;; The rest of this file shouldn't need editing.
+
+(require 'cl)
+
+(defun halp-add-all-hooks ()
+  (halp-add-hook 'sh-mode-hook 'sh-mode-map "\M-i" 'halp-update-sh)
+  ; Python mode might be called either py-mode or python-mode:
+  (halp-add-hook 'py-mode-hook 'py-mode-map "\M-i" 'halp-update-python)
+  (halp-add-hook 'python-mode-hook 'python-mode-map "\M-i" 'halp-update-python)
+  (halp-add-hook 'haskell-mode-hook 'haskell-mode-map "\M-i"
+                 'halp-update-haskell)
+  (halp-add-hook 'literate-haskell-mode-hook 'literate-haskell-mode-map "\M-i"
+                 'halp-update-literate-haskell))
 
 (defun halp-add-hook (hook map-name key halp-update-function)
   (add-hook hook
             `(lambda ()
                (define-key ,map-name ',key ',halp-update-function))))
 
-(halp-add-hook 'sh-mode-hook 'sh-mode-map "\M-i" 'halp-update-sh)
-(halp-add-hook 'python-mode-hook 'python-mode-map "\M-i" 'halp-update-python)
-(halp-add-hook 'haskell-mode-hook 'haskell-mode-map "\M-i" 'halp-update-haskell)
-(halp-add-hook 'literate-haskell-mode-hook 'literate-haskell-mode-map "\M-i"
-               'halp-update-literate-haskell)
-
-;; The rest of this file shouldn't need editing.
-
-;; Copyright 2006 Darius Bacon <darius@wry.me>
-;; Distributed under the terms of the MIT X License, found at
-;; http://www.opensource.org/licenses/mit-license.php
-
-(require 'cl)
-
 (defun halp-update-sh ()
   (interactive)
-  (halp-update (concat halp-helpers-directory "sh-halp.sh") '()))
+  (halp-update-relative "sh-halp.sh" '()))
 
 (defun halp-update-python ()
   (interactive)
-  (halp-update (concat halp-helpers-directory "pyhalp.py") '()))
+  (halp-update-relative "pyhalp.py" '()))
 
 (defun halp-update-haskell ()
   (interactive)
-  (halp-update (concat halp-helpers-directory "ghcihalp.py") '(".hs")))
+  (halp-update-relative "ghcihalp.py" '(".hs")))
 
 (defun halp-update-literate-haskell ()
   (interactive)
-  (halp-update (concat halp-helpers-directory "ghcihalp.py") '(".lhs")))
+  (halp-update-relative "ghcihalp.py" '(".lhs")))
+
+(defun halp-update-relative (command args)
+  (halp-find-helpers-directory)
+  (halp-update (concat halp-helpers-directory command) args))
+
+(defun halp-find-helpers-directory ()
+  "Make halp-helpers-directory point to the directory it was
+loaded from, if it's not yet initialized."
+  (unless halp-helpers-directory
+    (let ((filename (symbol-file 'halp-helpers-directory)))
+      (when filename
+        (setq halp-helpers-directory 
+              (halp-filename-directory filename))))))
+
+(defun halp-filename-directory (filename)
+  "Return the directory part of a filename."
+  (replace-regexp-in-string "/[^/]*$" "/" filename))
 
 (defun halp-update (command args)
   "Update the current buffer using an external helper program."
@@ -74,4 +96,5 @@
 
 ;; Wrap-up
 
+(halp-add-all-hooks)
 (provide 'halp)

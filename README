@@ -14,14 +14,14 @@ do and how it works. (XXX actually they don't yet)
 
 INSTALLING
 
-First, edit halp.el, setting halp-helpers-directory to this directory
-(the directory containing these files).
-
-Then add this line to your .emacs:
+Add this line to your .emacs:
 
   (load-file "/path/to/halp.el")
 
 or just do M-x load-file halp.el.
+
+It will bind M-i in the modes that Halp supports. (Edit halp.el if you
+want to change this.)
 
 You will need python-mode, or haskell-mode, etc., installed already
 (whichever of these you intend to use with Halp). You will also need
