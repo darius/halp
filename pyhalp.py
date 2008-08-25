@@ -31,8 +31,13 @@ try:
 except:
     lineno = get_lineno(sys.exc_info())
     lines = input.split('\n')
-    lines.insert(lineno - 1, format_result(traceback.format_exc()))
-    sys.stdout.write('\n'.join(lines))
+    def keep_source_lines(lines):
+        return [line for line in lines if not line.startswith('#| ')]
+    def write(lines):
+        sys.stdout.write('\n'.join(lines))
+    write(keep_source_lines(lines[:lineno])
+          + [format_result(traceback.format_exc())]
+          + keep_source_lines(lines[lineno:]))
     sys.exit(0)
 
 output = []
