@@ -39,7 +39,7 @@ def eval_line(code, globals):
         return OutputPart(repr(eval(code, globals)))
     except SyntaxError:
         try:
-            exec code in mod_dict
+            exec code in globals
             return EmptyPart()
         except:
             return format_exc()
