@@ -13,7 +13,7 @@ def format_result(s):
     return '#| %s' % s.replace('\n', '\n#| ')
 
 def get_lineno((etype, value, tb)):
-    if etype is SyntaxError and value.filename == '<string>':
+    if isinstance(value, SyntaxError) and value.filename == '<string>':
         return value.lineno
     items = traceback.extract_tb(tb)
     if items:
