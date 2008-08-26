@@ -22,22 +22,17 @@ def get_lineno((etype, value, tb)):
             return lineno
     return 1
 
-input = sys.stdin.read()
+input = [line for line in sys.stdin.read().split('\n')
+         if not line.startswith('#| ')]
 
 mod_dict = {'__name__': '', '__file__': '<stdin>', '__doc__': None}
 
 try:
-    exec input in mod_dict
+    exec '\n'.join(input) in mod_dict
 except:
     lineno = get_lineno(sys.exc_info())
-    lines = input.split('\n')
-    def keep_source_lines(lines):
-        return [line for line in lines if not line.startswith('#| ')]
-    def write(lines):
-        sys.stdout.write('\n'.join(lines))
-    write(keep_source_lines(lines[:lineno])
-          + [format_result(traceback.format_exc())]
-          + keep_source_lines(lines[lineno:]))
+    input.insert(lineno, format_result(traceback.format_exc()))
+    sys.stdout.write('\n'.join(input))
     sys.exit(0)
 
 def interpret(code):
@@ -55,10 +50,8 @@ def interpret(code):
         return traceback.format_exc()
 
 output = []
-for line in input.split('\n'):
-    if line.startswith('#| '):
-        pass
-    elif line.startswith('## '):
+for line in input:
+    if line.startswith('## '):
         output.append(line)
         outcome = interpret(line[len('## '):])
         if outcome is not None:
