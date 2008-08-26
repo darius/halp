@@ -47,11 +47,20 @@ for line in input.split('\n'):
     elif line.startswith('## '):
         output.append(line)
         expr = line[len('## '):]
+        # Geez, there's got to be a better way to code this:
         try:
             result = repr(eval(expr, mod_dict))
+        except SyntaxError:
+            try:
+                exec expr in mod_dict
+            except:
+                result = traceback.format_exc()
+                output.append(format_result(result))
         except:
             result = traceback.format_exc()
-        output.append(format_result(result))
+            output.append(format_result(result))
+        else:
+            output.append(format_result(result))
     else:
         output.append(line)
 

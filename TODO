@@ -72,3 +72,5 @@ bug: on syntax error, the tracebacks pile up if you keep hitting M-i
 python-mode-map is py-mode-map in the python-mode that comes with Python
 
 make install more automatic
+
+allow statements
