@@ -40,27 +40,29 @@ except:
           + keep_source_lines(lines[lineno:]))
     sys.exit(0)
 
+def interpret(code):
+    """Given a string that may be either an expression or a statement,
+    evaluate it and return a string of the outcome, or None."""
+    try:
+        return repr(eval(code, mod_dict))
+    except SyntaxError:
+        try:
+            exec code in mod_dict
+            return None
+        except:
+            return traceback.format_exc()
+    except:
+        return traceback.format_exc()
+
 output = []
 for line in input.split('\n'):
     if line.startswith('#| '):
         pass
     elif line.startswith('## '):
         output.append(line)
-        expr = line[len('## '):]
-        # Geez, there's got to be a better way to code this:
-        try:
-            result = repr(eval(expr, mod_dict))
-        except SyntaxError:
-            try:
-                exec expr in mod_dict
-            except:
-                result = traceback.format_exc()
-                output.append(format_result(result))
-        except:
-            result = traceback.format_exc()
-            output.append(format_result(result))
-        else:
-            output.append(format_result(result))
+        outcome = interpret(line[len('## '):])
+        if outcome is not None:
+            output.append(format_result(outcome))
     else:
         output.append(line)
 
