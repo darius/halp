@@ -1,8 +1,6 @@
 don't move the cursor, really. and:
 move cursor to exact position reported by compiler error message
 
-line numbers in tracebacks can be wrong (since we insert/delete lines)
-
 get source lines back into tracebacks
   - set __loader__ variable? see linecache.py:updatecache()
   - write to a file and import that?
@@ -74,3 +72,5 @@ python-mode-map is py-mode-map in the python-mode that comes with Python
 make install more automatic
 
 allow statements
+
+fix: line numbers in tracebacks can be wrong (since we insert/delete lines)
