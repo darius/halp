@@ -109,8 +109,8 @@ class LineNumberMap:
         self.output_positions = [0] # The line numbers where output is inserted
         self.fixups = [0]
         self.n_output = 0
-        # self.fixups[i] is the total change in line number for old line
-        # numbers in the range
+        # self.fixups[i] is the difference between new and old line
+        # numbers for old line numbers in the range
         #   self.output_positions[i] < lineno <= self.output_positions[i+1]
         # Invariant:
         #   len(self.output_positions) == len(self.fixups)
