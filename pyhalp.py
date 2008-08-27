@@ -4,6 +4,7 @@ Run a Halp-extended .py sourcefile from stdin; write to stdout the
 same sourcefile with evaluation results placed inline.
 """
 
+import bisect
 import sys
 import traceback
 
@@ -103,10 +104,18 @@ def format_part(part):
 
 class LineNumberMap:
     "Tracks line-number changes and applies them to old line numbers."
-    # TODO: faster algorithm
     def __init__(self):
         self.input_lines = []
-        self.inserts = []
+        self.output_positions = [0] # The line numbers where output is inserted
+        self.fixups = [0]
+        self.n_output = 0
+        # self.fixups[i] is the total change in line number for old line
+        # numbers in the range
+        #   self.output_positions[i] < lineno <= self.output_positions[i+1]
+        # Invariant:
+        #   len(self.output_positions) == len(self.fixups)
+        #   self.output_positions is sorted
+        #   self.n_output == sum(self.fixups)
     def add_input_line(self, line):
         self.input_lines.append(line)
     def get_input_line(self, lineno):
@@ -115,10 +124,12 @@ class LineNumberMap:
         except IndexError:
             return None
     def count_output(self, n_lines):
-        self.inserts.append((1 + len(self.input_lines), n_lines))
+        self.n_output += n_lines
+        self.output_positions.append(1 + len(self.input_lines))
+        self.fixups.append(self.n_output)
     def fix_lineno(self, lineno):
-        delta = sum(n for (i, n) in self.inserts if i < lineno)
-        return lineno + delta
+        i = bisect.bisect_right(self.output_positions, lineno) - 1
+        return lineno + self.fixups[i]
 
 class CompoundPart:
     "A part that's a sequence of subparts."
