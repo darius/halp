@@ -23,19 +23,13 @@ def halp(module_text):
 def eval_module(input):
     """Given a module's code as a list of lines, produce the Halp
     output as a 'part'."""
-    if halp_filename.endswith('.py'):
-        module_name = halp_filename[:-3]
-    else:
-        module_name = '<string>'
-    module_dict = {'__name__': module_name,
-                   '__file__': halp_filename,
-                   '__doc__': None}
+    module_dict = set_up_globals()
     try:
         exec '\n'.join(input) in module_dict
     except:
         lineno = get_lineno(sys.exc_info())
         parts = map(InputPart, input)
-        parts.insert(lineno, format_exc()) # XXX could fail if lineno bad
+        parts.insert(lineno, format_exc())
     else:
         parts = []
         for line in input:
@@ -46,6 +40,15 @@ def eval_module(input):
                 if opt_part is not None:
                     parts.append(opt_part)
     return CompoundPart(parts)
+
+def set_up_globals():
+    if halp_filename.endswith('.py'):
+        module_name = halp_filename[:-3]
+    else:
+        module_name = '<string>'
+    return {'__name__': module_name,
+            '__file__': halp_filename,
+            '__doc__': None}
 
 def eval_line(code, module_dict):
     """Given a string that may be either an expression or a statement,
