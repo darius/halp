@@ -10,17 +10,22 @@ import traceback
 
 # Evaluation
 
-def halp(string_):
+filename = ''
+
+def halp(module_text):
     """Given a module's code as a string, produce the Halp output as a
     string."""
-    input = [line for line in string_.split('\n')
+    input = [line for line in module_text.split('\n')
              if not line.startswith('#| ')]
     return format_part(eval_module(input))
 
 def eval_module(input):
     """Given a module's code as a list of lines, produce the Halp
     output as a 'part'."""
-    mod_dict = {'__name__': '', '__file__': '<stdin>', '__doc__': None}
+    module_name = filename[:-3] if filename.endswith('.py') else filename
+    mod_dict = {'__name__': module_name,
+                '__file__': filename,
+                '__doc__': None}
     try:
         exec '\n'.join(input) in mod_dict
     except:
@@ -162,4 +167,6 @@ def format_traceback(tb_items):
 # Main program
 
 if __name__ == '__main__':
+    if 2 <= len(sys.argv):
+        filename = sys.argv[1]
     sys.stdout.write(halp(sys.stdin.read()))

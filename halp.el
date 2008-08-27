@@ -3,8 +3,8 @@
 ;; http://www.opensource.org/licenses/mit-license.php
 
 ;; If for some reason you move the helper programs like pyhalp.py to a
-;; different directory (not the one this file is in) then set this
-;; variable:
+;; different directory (not the one this file is loaded from) then set
+;; this variable:
 (defvar halp-helpers-directory nil
   "Directory where Halp helper scripts are installed.")
 
@@ -33,7 +33,7 @@
 
 (defun halp-update-python ()
   (interactive)
-  (halp-update-relative "pyhalp.py" '()))
+  (halp-update-relative "pyhalp.py" (list (buffer-name (current-buffer)))))
 
 (defun halp-update-haskell ()
   (interactive)
