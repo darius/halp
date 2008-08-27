@@ -11,36 +11,42 @@ import traceback
 # Evaluation
 
 def halp(string_):
+    """Given a module's code as a string, produce the Halp output as a
+    string."""
     input = [line for line in string_.split('\n')
              if not line.startswith('#| ')]
     return format_part(eval_module(input))
 
 def eval_module(input):
+    """Given a module's code as a list of lines, produce the Halp
+    output as a 'part'."""
     mod_dict = {'__name__': '', '__file__': '<stdin>', '__doc__': None}
     try:
         exec '\n'.join(input) in mod_dict
     except:
         lineno = get_lineno(sys.exc_info())
         parts = map(InputPart, input)
-        parts.insert(lineno, format_exc())
+        parts.insert(lineno, format_exc()) # XXX could fail if lineno bad
     else:
         parts = []
         for line in input:
             parts.append(InputPart(line))
             if line.startswith('## '):
                 code = line[len('## '):]
-                parts.append(eval_line(code, mod_dict))
+                opt_part = eval_line(code, mod_dict)
+                if opt_part is not None:
+                    parts.append(opt_part)
     return CompoundPart(parts)
 
 def eval_line(code, globals):
     """Given a string that may be either an expression or a statement,
-    evaluate it and return a part for output."""
+    evaluate it and return a part for output, or None."""
     try:
         return OutputPart(repr(eval(code, globals)))
     except SyntaxError:
         try:
             exec code in globals
-            return EmptyPart()
+            return None
         except:
             return format_exc()
     except:
@@ -50,7 +56,7 @@ def eval_line(code, globals):
 # Exception capture
 
 def format_exc(limit=None):
-    """Like traceback.format_exc() but reformatted/renumbered."""
+    "Like traceback.format_exc() but returning a 'part'."
     try:
         etype, value, tb = sys.exc_info()
         return format_exception(etype, value, tb, limit)
@@ -58,14 +64,17 @@ def format_exc(limit=None):
         etype = value = tb = None
 
 def format_exception(etype, value, tb, limit=None):
+    "Like traceback.format_exception() but returning a 'part'."
     exc_lines = traceback.format_exception_only(etype, value)
     exc_only = ''.join(exc_lines).rstrip('\n')
     parts = [OutputPart('Traceback (most recent call last):'),
+             # [1:] drops the top frame (which is Halp internals)
              TracebackPart(traceback.extract_tb(tb, limit)[1:]),
              OutputPart(exc_only)]
     return CompoundPart(parts)
 
 def get_lineno((etype, value, tb)):
+    "Return the line number where this exception should be reported."
     if isinstance(value, SyntaxError) and value.filename == '<string>':
         return value.lineno
     items = traceback.extract_tb(tb)
@@ -76,14 +85,16 @@ def get_lineno((etype, value, tb)):
     return 1
 
 
-# Output formatting with traceback line-number fixup
+# Formatting output with traceback line numbers fixed
 
 def format_part(part):
+    "Return part expanded into a string, with line numbers corrected."
     lnmap = LineNumberMap()
     part.count_lines(lnmap)
     return part.format(lnmap)
 
 class LineNumberMap:
+    "Tracks line-number changes and applies them to old line numbers."
     # TODO: faster algorithm
     def __init__(self):
         self.n_input = 1
@@ -93,26 +104,21 @@ class LineNumberMap:
     def count_output(self, n_lines):
         self.inserts.append((self.n_input, n_lines))
     def fix_lineno(self, lineno):
-        delta = sum(n for i, n in self.inserts if i < lineno)
+        delta = sum(n for (i, n) in self.inserts if i < lineno)
         return lineno + delta
 
-class EmptyPart:
-    def count_lines(self, lnmap):
-        pass
-    def format(self, lnmap):
-        return ''
-
 class CompoundPart:
+    "A part that's a sequence of subparts."
     def __init__(self, parts):
         self.parts = parts
     def count_lines(self, lnmap):
         for part in self.parts:
             part.count_lines(lnmap)
     def format(self, lnmap):
-        return '\n'.join(part.format(lnmap) for part in self.parts
-                         if not isinstance(part, EmptyPart)) # ugh
+        return '\n'.join(part.format(lnmap) for part in self.parts)
 
 class InputPart:
+    "An input line, passed to the output unchanged."
     def __init__(self, text):
         self.text = text
     def count_lines(self, lnmap):
@@ -121,6 +127,7 @@ class InputPart:
         return self.text
 
 class OutputPart:
+    "Some output lines, with a #| prefix."
     def __init__(self, text):
         self.text = text
     def count_lines(self, lnmap):
@@ -129,6 +136,7 @@ class OutputPart:
         return format_result(self.text)
 
 class TracebackPart:
+    "An output traceback with a #| prefix and with line numbers adjusted."
     def __init__(self, tb_items):
         self.items = tb_items
     def count_lines(self, lnmap):
@@ -143,9 +151,11 @@ class TracebackPart:
         return format_result(format_traceback(map(fix_item, self.items)))
 
 def format_result(s):
+    "Prefix each line of s with '#| '."
     return '#| %s' % s.replace('\n', '\n#| ')
 
 def format_traceback(tb_items):
+    "Turn a list of traceback items into a string."
     return ''.join(traceback.format_list(tb_items)).rstrip('\n')
 
 

@@ -1,3 +1,6 @@
+the first line in a traceback from a ## line needs its line-number
+fixed differently
+
 don't move the cursor, really. and:
 move cursor to exact position reported by compiler error message
 
