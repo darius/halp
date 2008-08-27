@@ -1,14 +1,10 @@
+we're still getting 'File "<string>", line 14' on syntax errors
+
 the first line in a traceback from a ## line needs its line-number
 fixed differently
 
 don't move the cursor, really. and:
 move cursor to exact position reported by compiler error message
-
-get source lines back into tracebacks
-  - set __loader__ variable? see linecache.py:updatecache()
-  - write to a file and import that?
-
-get module name back into tracebacks
 
 tush variant
 
@@ -77,3 +73,9 @@ make install more automatic
 allow statements
 
 fix: line numbers in tracebacks can be wrong (since we insert/delete lines)
+
+get source lines back into tracebacks
+  - set __loader__ variable? see linecache.py:updatecache()
+  - write to a file and import that?
+
+get module name back into tracebacks

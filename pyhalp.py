@@ -10,7 +10,7 @@ import traceback
 
 # Evaluation
 
-filename = ''
+halp_filename = '<string>'   # Default
 
 def halp(module_text):
     """Given a module's code as a string, produce the Halp output as a
@@ -22,12 +22,15 @@ def halp(module_text):
 def eval_module(input):
     """Given a module's code as a list of lines, produce the Halp
     output as a 'part'."""
-    module_name = filename[:-3] if filename.endswith('.py') else filename
-    mod_dict = {'__name__': module_name,
-                '__file__': filename,
-                '__doc__': None}
+    if halp_filename.endswith('.py'):
+        module_name = halp_filename[:-3]
+    else:
+        module_name = '<string>'
+    module_dict = {'__name__': module_name,
+                   '__file__': halp_filename,
+                   '__doc__': None}
     try:
-        exec '\n'.join(input) in mod_dict
+        exec '\n'.join(input) in module_dict
     except:
         lineno = get_lineno(sys.exc_info())
         parts = map(InputPart, input)
@@ -38,19 +41,19 @@ def eval_module(input):
             parts.append(InputPart(line))
             if line.startswith('## '):
                 code = line[len('## '):]
-                opt_part = eval_line(code, mod_dict)
+                opt_part = eval_line(code, module_dict)
                 if opt_part is not None:
                     parts.append(opt_part)
     return CompoundPart(parts)
 
-def eval_line(code, globals):
+def eval_line(code, module_dict):
     """Given a string that may be either an expression or a statement,
     evaluate it and return a part for output, or None."""
     try:
-        return OutputPart(repr(eval(code, globals)))
+        return OutputPart(repr(eval(code, module_dict)))
     except SyntaxError:
         try:
-            exec code in globals
+            exec code in module_dict
             return None
         except:
             return format_exc()
@@ -90,7 +93,7 @@ def get_lineno((etype, value, tb)):
     return 1
 
 
-# Formatting output with traceback line numbers fixed
+# Formatting output with tracebacks fixed up
 
 def format_part(part):
     "Return part expanded into a string, with line numbers corrected."
@@ -102,12 +105,17 @@ class LineNumberMap:
     "Tracks line-number changes and applies them to old line numbers."
     # TODO: faster algorithm
     def __init__(self):
-        self.n_input = 1
+        self.input_lines = []
         self.inserts = []
-    def count_input_line(self):
-        self.n_input += 1
+    def add_input_line(self, line):
+        self.input_lines.append(line)
+    def get_input_line(self, lineno):
+        try:
+            return self.input_lines[lineno - 1]
+        except IndexError:
+            return None
     def count_output(self, n_lines):
-        self.inserts.append((self.n_input, n_lines))
+        self.inserts.append((1 + len(self.input_lines), n_lines))
     def fix_lineno(self, lineno):
         delta = sum(n for (i, n) in self.inserts if i < lineno)
         return lineno + delta
@@ -127,7 +135,7 @@ class InputPart:
     def __init__(self, text):
         self.text = text
     def count_lines(self, lnmap):
-        lnmap.count_input_line()
+        lnmap.add_input_line(self.text)
     def format(self, lnmap):
         return self.text
 
@@ -141,7 +149,8 @@ class OutputPart:
         return format_result(self.text)
 
 class TracebackPart:
-    "An output traceback with a #| prefix and with line numbers adjusted."
+    """An output traceback with a #| prefix and with the stack frames
+    corrected when they refer to the code being halped."""
     def __init__(self, tb_items):
         self.items = tb_items
     def count_lines(self, lnmap):
@@ -151,7 +160,9 @@ class TracebackPart:
     def format(self, lnmap):
         def fix_item((filename, lineno, name, line)):
             if filename == '<string>':
-                lineno = lnmap.fix_lineno(lineno) 
+                filename = halp_filename
+                line = lnmap.get_input_line(lineno)
+                lineno = lnmap.fix_lineno(lineno)
             return (filename, lineno, name, line)
         return format_result(format_traceback(map(fix_item, self.items)))
 
@@ -168,5 +179,5 @@ def format_traceback(tb_items):
 
 if __name__ == '__main__':
     if 2 <= len(sys.argv):
-        filename = sys.argv[1]
+        halp_filename = sys.argv[1]
     sys.stdout.write(halp(sys.stdin.read()))
