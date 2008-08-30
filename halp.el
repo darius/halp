@@ -116,7 +116,8 @@ that outputs a diff."
     (goto-char p)))
 
 (defun halp-update-current-buffer/diff (output)
-  (halp-apply-diff (current-buffer) output))
+  (save-excursion
+    (halp-apply-diff (current-buffer) output)))
 
 
 ;;; Parsing and applying a diff
