@@ -102,8 +102,8 @@ def format_exception(etype, value, tb, limit=None):
     exc_lines = traceback.format_exception_only(etype, value)
     exc_only = ''.join(exc_lines).rstrip('\n')
     parts = [OutputPart('Traceback (most recent call last):'),
-             # [1:] drops the top frame (which is Halp internals)
-             TracebackPart(traceback.extract_tb(tb, limit)[1:]),
+             # [3:] drops the top frames (which are Halp internals)
+             TracebackPart(traceback.extract_tb(tb, limit)[3:]),
              OutputPart(exc_only)]
     return CompoundPart(parts)
 
