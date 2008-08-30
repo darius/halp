@@ -56,7 +56,8 @@ def eval_line(code, module_dict):
     """Given a string that may be either an expression or a statement,
     evaluate it and return a part for output, or None."""
     try:
-        return OutputPart(repr(eval(code, module_dict)))
+        result = eval(code, module_dict)
+        return None if result is None else OutputPart(repr(result))
     except SyntaxError:
         try:
             exec code in module_dict
