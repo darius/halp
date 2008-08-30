@@ -69,6 +69,7 @@ loaded from, if it's not yet initialized."
 (defun halp-update (command args)
   "Update the current buffer using an external helper program."
   (interactive)
+  (message "Halp starting...")
   (let ((output (halp-get-output-buffer)))
 ;;    (call-process-region (point-min) (point-max) "cat" t t)
     (let ((rc (apply 'call-process-region
@@ -76,24 +77,25 @@ loaded from, if it's not yet initialized."
                      args)))
       (cond ((zerop rc)                 ;success
              (halp-update-current-buffer output)
-             (message "hooray"))
+             (message "Halp starting... done"))
             ((numberp rc)
-             (message "Helper process failed"))
+             (message "Halp starting... helper process failed"))
             (t (message rc))))))
 
 (defun halp-update/diff (command args)
   "Update the current buffer using an external helper program
 that outputs a diff."
   (interactive)
+  (message "Halp starting...")
   (let ((output (halp-get-output-buffer)))
     (let ((rc (apply 'call-process-region
                      (point-min) (point-max) command nil output nil 
                      args)))
       (cond ((zerop rc)                 ;success
              (halp-update-current-buffer/diff output)
-             (message "hooray"))
+             (message "Halp starting... done"))
             ((numberp rc)
-             (message "Helper process failed"))
+             (message "Halp starting... helper process failed"))
             (t (message rc))))))
 
 (defun halp-get-output-buffer ()

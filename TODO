@@ -1,15 +1,7 @@
-make sure python isn't compiling pyhalp.py every time we run
-
 don't output 'None' results
 
-emacs is misfontifying after M-i. WTF? oh. seems like it's starting
-from the old fontification but with the new text in position, and
-getting confused. no, it's worse than that: it gets fucked up even
-when nothing changes.
-
-also, why is it moving my window start position in the buffer
-when there are no changes in the text before the start position,
-and point doesn't stray out of the visible area?
+Occasionally python is claiming to see a syntax error on ## lines
+that are at the end of the file with no trailing \n. Dunno why.
 
 we're still getting 'File "<string>", line 14' on syntax errors
 
@@ -21,8 +13,6 @@ move cursor to exact position reported by compiler error message
 catch writes to stdout
 
 tush variant
-
-display a "Halp starting..." message when we start; "finished" when done
 
 continuous halp mode: auto-rerun halp after every change to the buffer;
 but don't show changed output after these auto-reruns (too disruptive);
@@ -55,6 +45,8 @@ insert results asynchronously; don't hang up emacs
 lisp support
 
 persistent process to avoid startup time, if possible
+
+make sure python isn't compiling pyhalp.py every time we run
 
 
 
@@ -99,3 +91,14 @@ get module name back into tracebacks
 don't move the cursor, really. (done for python only)
 
 don't dirty the buffer unnecessarily (done for python only)
+
+emacs is misfontifying after M-i. WTF? oh. seems like it's starting
+from the old fontification but with the new text in position, and
+getting confused. no, it's worse than that: it gets fucked up even
+when nothing changes.
+
+also, why is it moving my window start position in the buffer
+when there are no changes in the text before the start position,
+and point doesn't stray out of the visible area?
+
+display a "Halp starting..." message when we start; "finished" when done
