@@ -8,6 +8,7 @@
 (defvar halp-helpers-directory nil
   "Directory where Halp helper scripts are installed.")
 
+
 ;; The rest of this file shouldn't need editing.
 
 (require 'cl)
@@ -33,7 +34,9 @@
 
 (defun halp-update-python ()
   (interactive)
-  (halp-update-relative "pyhalp.py" (list (buffer-name (current-buffer)))))
+  (halp-find-helpers-directory)
+  (halp-update/diff (concat halp-helpers-directory "pyhalp.py") 
+                    (list (buffer-name (current-buffer)))))
 
 (defun halp-update-haskell ()
   (interactive)
@@ -60,6 +63,9 @@ loaded from, if it's not yet initialized."
   "Return the directory part of a filename."
   (replace-regexp-in-string "/[^/]*$" "/" filename))
 
+
+;; Running a helper command and applying its output
+
 (defun halp-update (command args)
   "Update the current buffer using an external helper program."
   (interactive)
@@ -70,6 +76,21 @@ loaded from, if it's not yet initialized."
                      args)))
       (cond ((zerop rc)                 ;success
              (halp-update-current-buffer output)
+             (message "hooray"))
+            ((numberp rc)
+             (message "Helper process failed"))
+            (t (message rc))))))
+
+(defun halp-update/diff (command args)
+  "Update the current buffer using an external helper program
+that outputs a diff."
+  (interactive)
+  (let ((output (halp-get-output-buffer)))
+    (let ((rc (apply 'call-process-region
+                     (point-min) (point-max) command nil output nil 
+                     args)))
+      (cond ((zerop rc)                 ;success
+             (halp-update-current-buffer/diff output)
              (message "hooray"))
             ((numberp rc)
              (message "Helper process failed"))
@@ -93,6 +114,58 @@ loaded from, if it's not yet initialized."
     (erase-buffer)
     (insert-buffer output)
     (goto-char p)))
+
+(defun halp-update-current-buffer/diff (output)
+  (halp-apply-diff (current-buffer) output))
+
+
+;;; Parsing and applying a diff
+
+(defun halp-apply-diff (to-buffer from-buffer)
+  (setq halp-argh '())
+  (save-current-buffer
+    (set-buffer from-buffer)
+    (goto-char (point-min))
+    (while (not (eobp))
+      (multiple-value-bind (lineno n-del start end) (halp-scan-chunk)
+        (halp-dbg (list 'chunk lineno n-del start end))
+        (set-buffer to-buffer)
+        (goto-line lineno)
+        (multiple-value-bind (start1 end1) (halp-scan-lines n-del)
+          (delete-region start1 end1)
+          (halp-dbg (list 'deleted n-del start1 end1)))
+        (insert-buffer-substring from-buffer start end)
+        (set-buffer from-buffer)))))
+
+(defun halp-dbg (x)
+  (setq halp-argh (cons x halp-argh)))
+
+(defvar halp-argh nil)
+
+(defun halp-scan-chunk ()
+  (let* ((lineno (halp-scan-number))
+         (n-del (halp-scan-number))
+         (n-ins (halp-scan-number)))
+    (forward-line)
+    (multiple-value-bind (start end) (halp-scan-lines n-ins)
+      (values lineno n-del start end))))
+
+(defun halp-scan-lines (n)
+  (let ((start (point)))
+    (forward-line n)
+    (values start (point))))
+
+(defun halp-scan-number ()
+  (string-to-number (halp-scan-word)))
+
+(defun halp-scan-word ()
+  (let ((start (point)))
+    (forward-word)
+    (halp-from start)))
+
+(defun halp-from (start)
+  (buffer-substring start (point)))
+
 
 ;; Wrap-up
 

@@ -1,3 +1,5 @@
+make sure python isn't compiling pyhalp.py every time we run
+
 don't output 'None' results
 
 emacs is misfontifying after M-i. WTF? oh. seems like it's starting
@@ -14,12 +16,17 @@ we're still getting 'File "<string>", line 14' on syntax errors
 the first line in a traceback from a ## line needs its line-number
 fixed differently
 
-don't move the cursor, really. and:
 move cursor to exact position reported by compiler error message
 
 catch writes to stdout
 
 tush variant
+
+display a "Halp starting..." message when we start; "finished" when done
+
+continuous halp mode: auto-rerun halp after every change to the buffer;
+but don't show changed output after these auto-reruns (too disruptive);
+instead just change the prefixes on outputs that change (to '#X ', say).
 
 more concise/useful Python error messages
 
@@ -29,8 +36,6 @@ there's an error
 single-stepping of some sort
 
 test isolation
-
-don't dirty the buffer unnecessarily
 
 allow multiline examples (and outputs?)
 
@@ -90,3 +95,7 @@ get source lines back into tracebacks
   - write to a file and import that?
 
 get module name back into tracebacks
+
+don't move the cursor, really. (done for python only)
+
+don't dirty the buffer unnecessarily (done for python only)
