@@ -3,8 +3,6 @@ fixed differently
 
 move cursor to exact position reported by compiler error message
 
-catch writes to stdout
-
 Occasionally python is claiming to see a syntax error on ## lines
 that are at the end of the file with no trailing \n. Dunno why.
 
@@ -102,3 +100,5 @@ and point doesn't stray out of the visible area?
 display a "Halp starting..." message when we start; "finished" when done
 
 don't output 'None' results
+
+catch writes to stdout

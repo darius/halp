@@ -5,6 +5,7 @@ same sourcefile with evaluation results placed inline.
 """
 
 import bisect
+from cStringIO import StringIO
 import difflib
 import sys
 import traceback
@@ -27,7 +28,8 @@ def eval_module(input):
     output as a 'part'."""
     module_dict = set_up_globals()
     try:
-        exec '\n'.join(input) in module_dict
+        def thunk(): exec '\n'.join(input) in module_dict
+        _, output = capturing_stdout(thunk)
     except:
         lineno = get_lineno(sys.exc_info())
         parts = map(InputPart, input)
@@ -41,6 +43,8 @@ def eval_module(input):
                 opt_part = eval_line(code, module_dict)
                 if opt_part is not None:
                     parts.append(opt_part)
+        if output:
+            parts.append(OutputPart(output))
     return CompoundPart(parts)
 
 def set_up_globals():
@@ -56,16 +60,31 @@ def eval_line(code, module_dict):
     """Given a string that may be either an expression or a statement,
     evaluate it and return a part for output, or None."""
     try:
-        result = eval(code, module_dict)
-        return None if result is None else OutputPart(repr(result))
+        result, output = capturing_stdout(lambda: eval(code, module_dict))
     except SyntaxError:
         try:
-            exec code in module_dict
-            return None
+            def thunk(): exec code in module_dict
+            result, output = capturing_stdout(thunk)
         except:
             return format_exc()
     except:
         return format_exc()
+    if output:
+        if result is not None:
+            output = '%s\n%r' % (output, result)
+        return OutputPart(output)
+    elif result is not None:
+        return OutputPart(repr(result))
+    else:
+        return None
+
+def capturing_stdout(thunk):
+    stdout = sys.stdout
+    sys.stdout = StringIO()
+    try:
+        return thunk(), sys.stdout.getvalue()
+    finally:
+        sys.stdout = stdout
 
 
 # Exception capture
