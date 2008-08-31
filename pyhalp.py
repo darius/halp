@@ -120,9 +120,7 @@ def extract_censored_tb(tb, limit=None):
         # The top item came from a '## ' line; fix its line number:
         filename, lineno, func_name, text = items[0]
         if filename == '<string>' and lineno == 1: # (should always be true)
-            lineno = current_line_number
-            text = None
-        items[0] = filename, lineno, func_name, text
+            items[0] = filename, current_line_number, func_name, None
     return items
 
 def get_lineno((etype, value, tb)):
