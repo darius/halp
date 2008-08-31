@@ -1,8 +1,3 @@
-the first line in a traceback from a ## line needs its line-number
-fixed differently
-
-move cursor to exact position reported by compiler error message
-
 Occasionally python is claiming to see a syntax error on ## lines
 that are at the end of the file with no trailing \n. Dunno why.
 
@@ -10,12 +5,18 @@ we're still getting 'File "<string>", line 14' on syntax errors
 
 tush variant
 
-allow reading previous round's output, to give us state and make this
-a means of actual interaction with a program
-
 continuous halp mode: auto-rerun halp after every change to the buffer;
 but don't show changed output after these auto-reruns (too disruptive);
 instead just change the prefixes on outputs that change (to '#X ', say).
+
+allow reading previous round's output, to give us state and make this
+a means of actual interaction with a program
+
+move cursor to position reported by compiler error message
+
+use sys.meta_path:
+http://www.python.org/dev/peps/pep-0302/
+http://blog.dowski.com/2008/07/31/customizing-the-python-import-system/
 
 more concise/useful Python error messages
 
@@ -102,3 +103,6 @@ display a "Halp starting..." message when we start; "finished" when done
 don't output 'None' results
 
 catch writes to stdout
+
+the first line in a traceback from a ## line needs its line-number
+fixed differently

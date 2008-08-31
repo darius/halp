@@ -14,6 +14,7 @@ import traceback
 # Evaluation
 
 halp_filename = '<string>'   # Default
+current_line_number = None
 
 def halp(module_text):
     """Given a module's code as a string, produce the Halp output as a
@@ -26,6 +27,8 @@ def halp(module_text):
 def eval_module(input):
     """Given a module's code as a list of lines, produce the Halp
     output as a 'part'."""
+    global current_line_number
+    current_line_number = None
     module_dict = set_up_globals()
     try:
         def thunk(): exec '\n'.join(input) in module_dict
@@ -36,10 +39,11 @@ def eval_module(input):
         parts.insert(lineno, format_exc())
     else:
         parts = []
-        for line in input:
+        for i, line in enumerate(input):
             parts.append(InputPart(line))
             if line.startswith('## '):
                 code = line[len('## '):]
+                current_line_number = i + 1
                 opt_part = eval_line(code, module_dict)
                 if opt_part is not None:
                     parts.append(opt_part)
@@ -102,10 +106,24 @@ def format_exception(etype, value, tb, limit=None):
     exc_lines = traceback.format_exception_only(etype, value)
     exc_only = ''.join(exc_lines).rstrip('\n')
     parts = [OutputPart('Traceback (most recent call last):'),
-             # [3:] drops the top frames (which are Halp internals)
-             TracebackPart(traceback.extract_tb(tb, limit)[3:]),
+             TracebackPart(extract_censored_tb(tb, limit)),
              OutputPart(exc_only)]
     return CompoundPart(parts)
+
+def extract_censored_tb(tb, limit=None):
+    """Like traceback.extract_tb() but with Halp internals
+    bowdlerized. (We assume the top-level halp() call is the top of
+    our traceback.)"""
+    # [3:] drops the top frames (which are Halp internals).
+    items = traceback.extract_tb(tb, limit)[3:]
+    if items and current_line_number:
+        # The top item came from a '## ' line; fix its line number:
+        filename, lineno, func_name, text = items[0]
+        if filename == '<string>' and lineno == 1: # (should always be true)
+            lineno = current_line_number
+            text = None
+        items[0] = filename, lineno, func_name, text
+    return items
 
 def get_lineno((etype, value, tb)):
     "Return the line number where this exception should be reported."
