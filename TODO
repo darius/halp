@@ -1,7 +1,3 @@
-A last line with no '\n' gets REPLACED on M-i. Fucking Emacs.
-Perhaps related: if you goto-line to the (nonexistent) next line, 
-Emacs silently inserts a '\n' without setting the dirty-buffer flag.
-
 Occasionally Python is claiming to see a syntax error on ## lines
 that are at the end of the file with no trailing \n. Dunno why.
 
@@ -115,3 +111,7 @@ catch writes to stdout
 
 the first line in a traceback from a ## line needs its line-number
 fixed differently
+
+A last line with no '\n' gets REPLACED on M-i. Fucking Emacs.
+Perhaps related: if you goto-line to the (nonexistent) next line, 
+Emacs silently inserts a '\n' without setting the dirty-buffer flag.

@@ -134,6 +134,10 @@ that outputs a diff."
         (halp-dbg (list 'chunk lineno n-del start end))
         (set-buffer to-buffer)
         (goto-line lineno)
+        (when (and (eobp) (/= (preceding-char) 10))
+          ; No newline at end of buffer; add it. Otherwise the
+          ; code below will delete the last line.
+          (insert-char 10 1))
         (multiple-value-bind (start1 end1) (halp-scan-lines n-del)
           (delete-region start1 end1)
           (halp-dbg (list 'deleted n-del start1 end1)))
