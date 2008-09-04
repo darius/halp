@@ -21,7 +21,9 @@
   (halp-add-hook 'haskell-mode-hook 'haskell-mode-map "\M-i"
                  'halp-update-haskell)
   (halp-add-hook 'literate-haskell-mode-hook 'literate-haskell-mode-map "\M-i"
-                 'halp-update-literate-haskell))
+                 'halp-update-literate-haskell)
+  (halp-add-hook 'javascript-mode-hook 'javascript-mode-map "\M-i"
+                 'halp-update-javascript))
 
 (defun halp-add-hook (hook map-name key halp-update-function)
   (add-hook hook
@@ -37,6 +39,11 @@
   (halp-find-helpers-directory)
   (halp-update/diff (concat halp-helpers-directory "pyhalp.py") 
                     (list (buffer-name (current-buffer)))))
+
+(defun halp-update-javascript ()
+  (interactive)
+  (halp-find-helpers-directory)
+  (halp-update/diff (concat halp-helpers-directory "v8halp.py") '()))
 
 (defun halp-update-haskell ()
   (interactive)
