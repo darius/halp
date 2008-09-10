@@ -1,6 +1,3 @@
-Occasionally Python is claiming to see a syntax error on ## lines
-that are at the end of the file with no trailing \n. Dunno why.
-
 We're still getting 'File "<string>", line 14' on syntax errors.
 It looks like that message comes out of the SyntaxError exception
 rather than the traceback. I tried setting value.filename = halp_filename

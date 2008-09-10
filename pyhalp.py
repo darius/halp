@@ -31,7 +31,10 @@ def eval_module(input):
     current_line_number = None
     module_dict = set_up_globals()
     try:
-        def thunk(): exec '\n'.join(input) in module_dict
+        # The "+ '\n'" seems to fix a weird bug where we'd get a
+        # syntax error sometimes if the last line was a '## ' line not
+        # ending in a newline character. I still don't understand it.
+        def thunk(): exec '\n'.join(input) + '\n' in module_dict
         _, output = capturing_stdout(thunk)
     except:
         lineno = get_lineno(sys.exc_info())
