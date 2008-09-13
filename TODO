@@ -9,9 +9,6 @@ continuous halp mode: auto-rerun halp after every change to the buffer;
 but don't show changed output after these auto-reruns (too disruptive);
 instead just change the prefixes on outputs that change (to '#X ', say).
 
-allow reading previous round's output, to give us state and make this
-a means of actual interaction with a program
-
 move cursor to position reported by compiler error message
 
 use sys.meta_path:

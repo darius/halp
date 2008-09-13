@@ -20,16 +20,26 @@ def halp(module_text):
     """Given a module's code as a string, produce the Halp output as a
     string."""
     input_lines = module_text.split('\n')
-    input = [line for line in input_lines if not line.startswith('#. ')]
-    output = format_part(eval_module(input))
+    input, old_outputs = strip_old_outputs(input_lines)
+    env = set_up_globals(Halp(old_outputs))
+    output = format_part(eval_module(input, env))
     return diff(output.split('\n'), input_lines)
 
-def eval_module(input):
+def set_up_globals(halp_object):
+    if halp_filename.endswith('.py'):
+        module_name = halp_filename[:-3]
+    else:
+        module_name = '<string>'
+    return {'__name__': module_name,
+            '__file__': halp_filename,
+            '__doc__': None,
+            'halp': halp_object}
+
+def eval_module(input, module_dict):
     """Given a module's code as a list of lines, produce the Halp
     output as a 'part'."""
     global current_line_number
     current_line_number = None
-    module_dict = set_up_globals()
     try:
         # The "+ '\n'" seems to fix a weird bug where we'd get a
         # syntax error sometimes if the last line was a '## ' line not
@@ -53,15 +63,6 @@ def eval_module(input):
         if output:
             parts.append(OutputPart(output))
     return CompoundPart(parts)
-
-def set_up_globals():
-    if halp_filename.endswith('.py'):
-        module_name = halp_filename[:-3]
-    else:
-        module_name = '<string>'
-    return {'__name__': module_name,
-            '__file__': halp_filename,
-            '__doc__': None}
 
 def eval_line(code, module_dict):
     """Given a string that may be either an expression or a statement,
@@ -92,6 +93,28 @@ def capturing_stdout(thunk):
         return thunk(), sys.stdout.getvalue()
     finally:
         sys.stdout = stdout
+
+
+# Halp "System-call interface"
+
+def strip_old_outputs(input_lines):
+    stripped = []
+    old_outputs = {}
+    for line in input_lines:
+        if line.startswith('#. '):
+            old_outputs.setdefault(len(stripped), []).append(line[len('#| '):])
+        else:
+            stripped.append(line)
+    return stripped, old_outputs
+
+## strip_old_outputs('hello\n#. world\n#. universe'.split('\n'))
+#. (['hello'], {1: ['world', 'universe']})
+
+class Halp:
+    def __init__(self, old_outputs):
+        self.old_outputs = old_outputs
+    def read(self):
+        return '\n'.join(self.old_outputs.get(current_line_number, []))
 
 
 # Exception capture
