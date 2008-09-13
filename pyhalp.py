@@ -20,7 +20,7 @@ def halp(module_text):
     """Given a module's code as a string, produce the Halp output as a
     string."""
     input_lines = module_text.split('\n')
-    input = [line for line in input_lines if not line.startswith('#| ')]
+    input = [line for line in input_lines if not line.startswith('#. ')]
     output = format_part(eval_module(input))
     return diff(output.split('\n'), input_lines)
 
@@ -195,7 +195,7 @@ class InputPart:
         return self.text
 
 class OutputPart:
-    "Some output lines, with a #| prefix."
+    "Some output lines, with a #. prefix."
     def __init__(self, text):
         self.text = text
     def count_lines(self, lnmap):
@@ -204,7 +204,7 @@ class OutputPart:
         return format_result(self.text)
 
 class TracebackPart:
-    """An output traceback with a #| prefix and with the stack frames
+    """An output traceback with a #. prefix and with the stack frames
     corrected when they refer to the code being halped."""
     def __init__(self, tb_items):
         self.items = tb_items
@@ -222,8 +222,8 @@ class TracebackPart:
         return format_result(format_traceback(map(fix_item, self.items)))
 
 def format_result(s):
-    "Prefix each line of s with '#| '."
-    return '#| %s' % s.replace('\n', '\n#| ')
+    "Prefix each line of s with '#. '."
+    return '#. %s' % s.replace('\n', '\n#. ')
 
 def format_traceback(tb_items):
     "Turn a list of traceback items into a string."

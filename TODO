@@ -3,8 +3,6 @@ It looks like that message comes out of the SyntaxError exception
 rather than the traceback. I tried setting value.filename = halp_filename
 in get_lineno, but that did nothing. Come back to this.
 
-change '#| ' prefix to '#. ' I think
-
 tush variant
 
 continuous halp mode: auto-rerun halp after every change to the buffer;
