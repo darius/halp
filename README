@@ -9,7 +9,8 @@ read-eval-print loop, but different.
 To try it out, first install halp.el as described below. Then visit a
 suitable file, (like sample.py, sample.lhs, or sample.sh in this
 directory), and hit M-i. These sample files will explain what you can
-do and how it works. (XXX actually they don't yet)
+do and how it works. (Actually only sample.py explains much. But for
+the other languages, currently, there's little to explain.)
 
 
 INSTALLING
