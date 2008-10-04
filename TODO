@@ -1,3 +1,10 @@
+fix: in pyhalp any stdout output isn't shown if there's an exception
+
+set PYTHONPATH (or something)
+
+don't delete old outputs if there's an error in the initial module
+loading. but do mark them somehow as no longer the current output.
+
 add doc comments to interactive elisp functions
 
 We're still getting 'File "<string>", line 14' on syntax errors.

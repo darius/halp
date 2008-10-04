@@ -275,12 +275,12 @@ def compute_diff(is_junk, a, b):
     i = j = 0
     triples = []
     for ai, bj, size in sm.get_matching_blocks():
-	# Invariant: 
-	#  triples is the diff for a[:i], b[:j]
-	#  and the next matching block is a[ai:ai+size] == b[bj:bj+size].
-	if i < ai or j < bj:
-	    triples.append((a[i:ai], j, bj))
-	i, j = ai+size, bj+size
+        # Invariant: 
+        #  triples is the diff for a[:i], b[:j]
+        #  and the next matching block is a[ai:ai+size] == b[bj:bj+size].
+        if i < ai or j < bj:
+            triples.append((a[i:ai], j, bj))
+        i, j = ai+size, bj+size
     triples.reverse()
     return triples
 
