@@ -95,7 +95,8 @@ def capturing_stdout(thunk):
         sys.stdout = stdout
 
 
-# Halp "System-call interface"
+# Halp "system-call interface"
+# This lets you feed back your command's previous output with 'halp.read()'.
 
 def strip_old_outputs(input_lines):
     stripped = []
