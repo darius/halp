@@ -112,9 +112,9 @@ def strip_old_outputs(input_lines):
 
 class Halp:
     def __init__(self, old_outputs):
-        self.old_outputs = old_outputs
+        self._old_outputs = old_outputs
     def read(self):
-        return '\n'.join(self.old_outputs.get(current_line_number, []))
+        return '\n'.join(self._old_outputs.get(current_line_number, []))
 
 
 # Exception capture
