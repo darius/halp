@@ -64,11 +64,7 @@ loaded from, if it's not yet initialized."
     (let ((filename (symbol-file 'halp-helpers-directory)))
       (when filename
         (setq halp-helpers-directory 
-              (halp-filename-directory filename))))))
-
-(defun halp-filename-directory (filename)
-  "Return the directory part of a filename."
-  (replace-regexp-in-string "/[^/]*$" "/" filename))
+              (file-name-directory filename))))))
 
 
 ;; Running a helper command and applying its output
