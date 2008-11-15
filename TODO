@@ -1,3 +1,11 @@
+fix: in pyhalp if the program writes to stdout, successful M-i presses
+add an extra newline in front of the output each time 
+
+fix: ghcihalp.py isn't reporting errors (or anything else) on this input:
+myzip [] [] = []
+myzip (x:xs) (x:ys) = (x, y) : (myzip xs ys)
+--- myzip "hello" "world"
+
 fix: in pyhalp any stdout output isn't shown if there's an exception
 
 set PYTHONPATH (or something)
