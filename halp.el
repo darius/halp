@@ -37,7 +37,8 @@
 (defun halp-update-python ()
   (interactive)
   (halp-find-helpers-directory)
-  (halp-update/diff (concat halp-helpers-directory (pick-by-os "pyhalp.py" "pyhalp.bat")) 
+  (halp-update/diff (concat halp-helpers-directory 
+			    (pick-by-os "pyhalp.py" "pyhalp.bat")) 
                     (list (buffer-name (current-buffer)))))
 
 (defun halp-update-javascript ()
@@ -170,7 +171,7 @@ that outputs a diff."
 
 (defun halp-scan-word ()
   (let ((start (point)))
-    (forward-word)
+    (forward-word 1)
     (halp-from start)))
 
 (defun halp-from (start)
