@@ -37,7 +37,7 @@
 (defun halp-update-python ()
   (interactive)
   (halp-find-helpers-directory)
-  (halp-update/diff (concat halp-helpers-directory "pyhalp.py") 
+  (halp-update/diff (concat halp-helpers-directory (pick-by-os "pyhalp.py" "pyhalp.bat")) 
                     (list (buffer-name (current-buffer)))))
 
 (defun halp-update-javascript ()
@@ -47,11 +47,11 @@
 
 (defun halp-update-haskell ()
   (interactive)
-  (halp-update-relative "ghcihalp.py" '(".hs")))
+  (halp-update-relative (pick-by-os "ghcihalp.py" "ghcihalp.bat") '(".hs")))
 
 (defun halp-update-literate-haskell ()
   (interactive)
-  (halp-update-relative "ghcihalp.py" '(".lhs")))
+  (halp-update-relative (pick-by-os "ghcihalp.py" "ghcihalp.bat") '(".lhs")))
 
 (defun halp-update-relative (command args)
   (halp-find-helpers-directory)
@@ -176,6 +176,10 @@ that outputs a diff."
 (defun halp-from (start)
   (buffer-substring start (point)))
 
+(defun pick-by-os (default-file windows-file)
+  (if (eq system-type 'windows-nt)
+      windows-file
+    default-file))
 
 ;; Wrap-up
 
