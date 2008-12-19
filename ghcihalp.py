@@ -92,4 +92,4 @@ for j, r in enumerate(result_lines):
                 i += 1
         break
 
-sys.stdout.write(''.join(output))
+sys.stdout.write(''.join(output).replace('\r\n', '\n'))
