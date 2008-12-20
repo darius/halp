@@ -37,22 +37,25 @@
 (defun halp-update-python ()
   (interactive)
   (halp-find-helpers-directory)
-  (halp-update/diff (concat halp-helpers-directory 
-			    (pick-by-os "pyhalp.py" "pyhalp.bat")) 
-                    (list (buffer-name (current-buffer)))))
+  (halp-py-update/diff (concat halp-helpers-directory "pyhalp.py") 
+		       (list (buffer-name (current-buffer)))))
 
 (defun halp-update-javascript ()
   (interactive)
   (halp-find-helpers-directory)
-  (halp-update/diff (concat halp-helpers-directory "v8halp.py") '()))
+  (halp-py-update/diff (concat halp-helpers-directory "v8halp.py") '()))
 
 (defun halp-update-haskell ()
   (interactive)
-  (halp-update-relative (pick-by-os "ghcihalp.py" "ghcihalp.bat") '(".hs")))
+  (halp-py-update-relative "ghcihalp.py" '(".hs")))
 
 (defun halp-update-literate-haskell ()
   (interactive)
-  (halp-update-relative (pick-by-os "ghcihalp.py" "ghcihalp.bat") '(".lhs")))
+  (halp-py-update-relative "ghcihalp.py" '(".lhs")))
+
+(defun halp-py-update-relative (command args)
+  (halp-find-helpers-directory)
+  (halp-update "python" (cons (concat halp-helpers-directory command) args)))
 
 (defun halp-update-relative (command args)
   (halp-find-helpers-directory)
@@ -85,6 +88,9 @@ loaded from, if it's not yet initialized."
             ((numberp rc)
              (message "Halp starting... helper process failed"))
             (t (message rc))))))
+
+(defun halp-py-update/diff (command args)
+  (halp-update/diff "python" (cons command args)))
 
 (defun halp-update/diff (command args)
   "Update the current buffer using an external helper program
@@ -176,11 +182,6 @@ that outputs a diff."
 
 (defun halp-from (start)
   (buffer-substring start (point)))
-
-(defun pick-by-os (default-file windows-file)
-  (if (eq system-type 'windows-nt)
-      windows-file
-    default-file))
 
 ;; Wrap-up
 
