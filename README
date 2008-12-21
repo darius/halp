@@ -26,8 +26,7 @@ want to change this.)
 
 You will need python-mode, or haskell-mode, etc., installed already
 (whichever of these you intend to use with Halp). You will also need
-Python >= 2.5 (or maybe an earlier version, but I haven't checked).
-This was tested with Emacs 22.
+Python >= 2.4 and Emacs 22 or 21.
 
 
 AUTHORS
