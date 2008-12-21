@@ -1,3 +1,9 @@
+clean up code:
+  halp.el has some ugly bits still lying around
+  group stuff into an examples directory
+
+set the current directory for python
+
 fix: in pyhalp if the program writes to stdout, successful M-i presses
 add an extra newline in front of the output each time 
 
