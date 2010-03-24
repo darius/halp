@@ -1,3 +1,13 @@
+When you have:
+def foo():
+  print 'yay'
+  assert False
+## foo()
+There's no 'yay' before the error traceback.
+
+may be useful:
+  inspect.currentframe()/getouterframes()/getinnerframes()/getframeinfo()
+
 clean up code:
   halp.el has some ugly bits still lying around
   group stuff into an examples directory
