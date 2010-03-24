@@ -49,7 +49,7 @@ def eval_module(input):
 
 def call_v8halp(text, halp_lines):
     #print 'halp_lines', halp_lines
-    args = ['./v8halp'] + halp_lines # XXX
+    args = ['v8halp'] + halp_lines
     p = subprocess.Popen(args,
                          stdin=subprocess.PIPE,
                          stdout=subprocess.PIPE,
