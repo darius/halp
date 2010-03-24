@@ -90,7 +90,7 @@ bool ExecuteString(v8::Handle<v8::String> source,
     if (result.IsEmpty()) {
       // Print errors that happened during execution.
       v8::String::AsciiValue error(try_catch.Exception());
-      printf("%s\n", *error);
+      printf("1\n%s\n", *error);
       return false;
     } else {
       if (print_result && !result->IsUndefined()) {
