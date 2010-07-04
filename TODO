@@ -1,3 +1,12 @@
+instead of '... done', indicate if there were any changes
+(so we don't have to have a cleanly-saved state at the beginning
+in order to tell)
+
+get v8halp to handle & report errors from loading the file
+(not just from running each /// line)
+
+v8halp: prettyprint objects (not just [object Object])
+
 When you have:
 def foo():
   print 'yay'
