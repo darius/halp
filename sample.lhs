@@ -6,4 +6,7 @@ When you hit M-i you should see '-- | 120' appear below the following line:
 
 --- fact (2 + 3)
 
-OK.
+OK. GHCi can do other tricks:
+
+--- :type fact
+--- :t fact

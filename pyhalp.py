@@ -103,7 +103,7 @@ def strip_old_outputs(input_lines):
     old_outputs = {}
     for line in input_lines:
         if line.startswith('#. '):
-            old_outputs.setdefault(len(stripped), []).append(line[len('#| '):])
+            old_outputs.setdefault(len(stripped), []).append(line[len('#. '):])
         else:
             stripped.append(line)
     return stripped, old_outputs

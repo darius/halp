@@ -83,25 +83,27 @@ bool ExecuteString(v8::Handle<v8::String> source,
   if (script.IsEmpty()) {
     // Print errors that happened during compilation.
     v8::String::AsciiValue error(try_catch.Exception());
-    printf("%s\n", *error);
+    printf("1\n%s\n", *error);
     return false;
   } else {
     v8::Handle<v8::Value> result = script->Run();
     if (result.IsEmpty()) {
       // Print errors that happened during execution.
       v8::String::AsciiValue error(try_catch.Exception());
-      printf("%s\n", *error);
+      printf("1\n%s\n", *error);
       return false;
     } else {
-      if (print_result && !result->IsUndefined()) {
+      if (print_result && result->IsUndefined()) {
+        printf("0\n");
+      } else if (print_result && !result->IsUndefined()) {
         // If all went well and the result wasn't undefined then print
-        // the returned value.
-        v8::String::AsciiValue str(result);
-        int nl = 0;
-        for (int i = 0; (*str)[i]; ++i) {
-          if ((*str)[i] == '\n') ++nl;
-        }
-        printf("%d\n%s\n", nl + 1, *str);
+          // the returned value.
+          v8::String::AsciiValue str(result);
+          int nl = 0;
+          for (int i = 0; (*str)[i]; ++i) {
+            if ((*str)[i] == '\n') ++nl;
+          }
+          printf("%d\n%s\n", nl + 1, *str);
       }
       return true;
     }
