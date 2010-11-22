@@ -1,7 +1,8 @@
 #!/usr/bin/env python
 """
-Run a Halp-extended .py sourcefile from stdin; write to stdout the
-same sourcefile with evaluation results placed inline.
+Run a Halp-extended .py sourcefile from stdin; write to stdout an
+encoding of the same sourcefile with evaluation results placed inline.
+The encoding is a kind of diff against the input, expected by halp.el.
 """
 
 import bisect
