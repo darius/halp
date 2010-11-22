@@ -64,6 +64,10 @@ set PYTHONPATH (or something)
 don't delete old outputs if there's an error in the initial module
 loading. but do mark them somehow as no longer the current output.
 
+halp.print(foo) => prints the result inline at the point in the
+source it occurs (or as close as we can figure out), instead of
+being collected with the general stdout output
+
 may be useful:
   inspect.currentframe()/getouterframes()/getinnerframes()/getframeinfo()
 
