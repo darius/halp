@@ -19,12 +19,19 @@ insert results asynchronously; don't hang up emacs
 
 persistent process to avoid startup time, if possible
 
+clean up code:
+  halp.el has some ugly bits still lying around
+  group stuff into an examples directory
+
 
 *********** halp.el:
 
 instead of '... done', indicate if there were any changes
 (so we don't have to have a cleanly-saved state at the beginning
 in order to tell)
+
+when the output changes, take the cursor to the first change,
+with the mark set so you can go back
 
 add doc comments to interactive elisp functions
 
@@ -37,6 +44,7 @@ move cursor to position reported by compiler error message
 
 *********** pyhalp:
 
+fix: in pyhalp any stdout output isn't shown if there's an exception
 When you have:
 def foo():
   print 'yay'
@@ -44,12 +52,10 @@ def foo():
 ## foo()
 There's no 'yay' before the error traceback.
 
-set the current directory for python
-
 fix: in pyhalp if the program writes to stdout, successful M-i presses
 add an extra newline in front of the output each time 
 
-fix: in pyhalp any stdout output isn't shown if there's an exception
+set the current directory for python
 
 set PYTHONPATH (or something)
 
@@ -81,10 +87,6 @@ get v8halp to handle & report errors from loading the file
 (not just from running each /// line)
 
 v8halp: prettyprint objects (not just [object Object])
-
-clean up code:
-  halp.el has some ugly bits still lying around
-  group stuff into an examples directory
 
 
 *********** ghcihalp:
