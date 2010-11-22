@@ -229,9 +229,8 @@ class TracebackPart:
         self.items = tb_items
     def count_lines(self, lnmap):
         def item_len((filename, lineno, name, line)):
-            if line:
-                return 2
-            return 1
+            if line: return 2
+            else: return 1
         lnmap.count_output(sum(map(item_len, self.items)))
     def format(self, lnmap):
         def fix_item((filename, lineno, name, line)):
