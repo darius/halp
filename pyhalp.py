@@ -58,16 +58,14 @@ def eval_module(input, module_dict):
             if line.startswith('## '):
                 code = line[len('## '):]
                 current_line_number = i + 1
-                opt_part = eval_line(code, module_dict)
-                if opt_part is not None:
-                    parts.append(opt_part)
+                parts.extend(eval_line(code, module_dict))
         if output:
             parts.append(OutputPart(output))
     return CompoundPart(parts)
 
 def eval_line(code, module_dict):
     """Given a string that may be either an expression or a statement,
-    evaluate it and return a part for output, or None."""
+    evaluate it and return a list of parts for output."""
     try:
         result, output = capturing_stdout(lambda: eval(code, module_dict))
     except SyntaxError:
@@ -75,17 +73,11 @@ def eval_line(code, module_dict):
             def thunk(): exec code in module_dict
             result, output = capturing_stdout(thunk)
         except:
-            return format_exc()
+            return [format_exc()]
     except:
-        return format_exc()
-    if output:
-        if result is not None:
-            output = '%s\n%r' % (output, result)
-        return OutputPart(output)
-    elif result is not None:
-        return OutputPart(repr(result))
-    else:
-        return None
+        return [format_exc()]
+    return (([OutputPart(repr(result))] if result is not None else [])
+            + ([OutputPart(output)] if output else []))
 
 def capturing_stdout(thunk):
     stdout = sys.stdout
