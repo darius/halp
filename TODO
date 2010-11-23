@@ -53,7 +53,9 @@ check against test results (#= prefix or something)
 make up a key-command to convert the textually next output into
 a test expectation
 
-fix: in pyhalp any stdout output isn't shown if there's an exception
+more sensible to show the result *after* the output
+
+fix: in pyhalp any stdout output isn't shown if there's an exception.
 When you have:
 def foo():
   print 'yay'
@@ -64,6 +66,10 @@ There's no 'yay' before the error traceback.
 set the current directory for python
 
 set PYTHONPATH (or something)
+
+use sys.meta_path:
+http://www.python.org/dev/peps/pep-0302/
+http://blog.dowski.com/2008/07/31/customizing-the-python-import-system/
 
 don't delete old outputs if there's an error in the initial module
 loading. but do mark them somehow as no longer the current output.
@@ -79,10 +85,6 @@ We're still getting 'File "<string>", line 14' on syntax errors.
 It looks like that message comes out of the SyntaxError exception
 rather than the traceback. I tried setting value.filename = halp_filename
 in get_lineno, but that did nothing. Come back to this.
-
-use sys.meta_path:
-http://www.python.org/dev/peps/pep-0302/
-http://blog.dowski.com/2008/07/31/customizing-the-python-import-system/
 
 more concise/useful Python error messages
 
