@@ -61,9 +61,6 @@ def foo():
 ## foo()
 There's no 'yay' before the error traceback.
 
-fix: in pyhalp if the program writes to stdout, successful M-i presses
-add an extra newline in front of the output each time 
-
 set the current directory for python
 
 set PYTHONPATH (or something)

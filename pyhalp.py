@@ -20,7 +20,7 @@ current_line_number = None
 def halp(module_text):
     """Given a module's code as a string, produce the Halp output as a
     string."""
-    input_lines = module_text.split('\n')
+    input_lines = module_text.splitlines()
     input, old_outputs = strip_old_outputs(input_lines)
     env = set_up_globals(Halp(old_outputs))
     output = format_part(eval_module(input, env))
