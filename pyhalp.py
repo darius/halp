@@ -184,10 +184,8 @@ class LineNumberMap:
     def get_input_line(self, lineno):
         """Tracebacks sometimes have None for the text of a line,
         so we have to supply it ourselves."""
-        try:
-            return self.input_lines[lineno - 1]
-        except IndexError:
-            return None
+        try: return self.input_lines[lineno - 1]
+        except IndexError: return None
     def count_output(self, n_lines):
         self.n_output += n_lines
         self.output_positions.append(1 + len(self.input_lines))
