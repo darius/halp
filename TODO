@@ -1,5 +1,7 @@
 *********** general:
 
+auto-timeout the helper-subprocess runs
+
 fill out test suite
 
 other languages:
@@ -45,6 +47,11 @@ move cursor to position reported by compiler error message
 
 
 *********** pyhalp:
+
+check against test results (#= prefix or something)
+
+make up a key-command to convert the textually next output into
+a test expectation
 
 fix: in pyhalp any stdout output isn't shown if there's an exception
 When you have:
