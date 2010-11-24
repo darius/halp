@@ -1,2 +1,2 @@
 python ../pyhalp.py <../sample.py >tmp &&
-diff expected.sample.py tmp
+diff -u expected.sample.py tmp
