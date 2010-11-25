@@ -63,8 +63,6 @@ def foo():
 ## foo()
 There's no 'yay' before the error traceback.
 
-set the current directory for python
-
 don't delete old outputs if there's an error in the initial module
 loading. but do mark them somehow as no longer the current output.
 
