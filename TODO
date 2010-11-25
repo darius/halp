@@ -27,12 +27,11 @@ clean up code:
   halp.el has some ugly bits still lying around
   group stuff into an examples directory
 
+wouldn't it be better to centralize the diffing in halp.el instead of
+in each helper? *tries to remember why I didn't*
+
 
 *********** halp.el:
-
-instead of '... done', indicate if there were any changes
-(so we don't have to have a cleanly-saved state at the beginning
-in order to tell)
 
 when the output changes, take the cursor to the first change,
 with the mark set so you can go back
@@ -47,6 +46,8 @@ move cursor to position reported by compiler error message
 
 
 *********** pyhalp:
+
+fix: an empty sourcefile produces a change
 
 check against test results (#= prefix or something)
 

@@ -102,8 +102,8 @@ that outputs a diff."
                      (point-min) (point-max) command nil output nil 
                      args)))
       (cond ((zerop rc)                 ;success
-             (halp-update-current-buffer/diff output)
-             (message "Halp starting... done"))
+             (let ((status (halp-update-current-buffer/diff output)))
+               (message (concat "Halp starting... " status))))
             ((numberp rc)
              (message "Halp starting... helper process failed"))
             (t (message rc))))))
@@ -136,23 +136,26 @@ that outputs a diff."
 
 (defun halp-apply-diff (to-buffer from-buffer)
   (setq halp-argh '())
-  (save-current-buffer
-    (set-buffer from-buffer)
-    (goto-char (point-min))
-    (while (not (eobp))
-      (multiple-value-bind (lineno n-del start end) (halp-scan-chunk)
-        (halp-dbg (list 'chunk lineno n-del start end))
-        (set-buffer to-buffer)
-        (goto-line lineno)
-        (when (and (eobp) (/= (preceding-char) 10))
-          ; No newline at end of buffer; add it. Otherwise the
-          ; code below will delete the last line.
-          (insert-char 10 1))
-        (multiple-value-bind (start1 end1) (halp-scan-lines n-del)
-          (delete-region start1 end1)
-          (halp-dbg (list 'deleted n-del start1 end1)))
-        (insert-buffer-substring from-buffer start end)
-        (set-buffer from-buffer)))))
+  (let ((status "ok"))
+    (save-current-buffer
+      (set-buffer from-buffer)
+      (goto-char (point-min))
+      (while (not (eobp))
+        (multiple-value-bind (lineno n-del start end) (halp-scan-chunk)
+          (setq status "changed")
+          (halp-dbg (list 'chunk lineno n-del start end))
+          (set-buffer to-buffer)
+          (goto-line lineno)
+          (when (and (eobp) (/= (preceding-char) 10))
+            ;; No newline at end of buffer; add it. Otherwise the
+            ;; code below will delete the last line.
+            (insert-char 10 1))
+          (multiple-value-bind (start1 end1) (halp-scan-lines n-del)
+            (delete-region start1 end1)
+            (halp-dbg (list 'deleted n-del start1 end1)))
+          (insert-buffer-substring from-buffer start end)
+          (set-buffer from-buffer))))
+    status))
 
 (defun halp-dbg (x)
   (setq halp-argh (cons x halp-argh)))
