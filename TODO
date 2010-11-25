@@ -65,12 +65,6 @@ There's no 'yay' before the error traceback.
 
 set the current directory for python
 
-set PYTHONPATH (or something)
-
-use sys.meta_path:
-http://www.python.org/dev/peps/pep-0302/
-http://blog.dowski.com/2008/07/31/customizing-the-python-import-system/
-
 don't delete old outputs if there's an error in the initial module
 loading. but do mark them somehow as no longer the current output.
 

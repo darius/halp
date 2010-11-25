@@ -8,13 +8,15 @@ The encoding is a kind of diff against the input, expected by halp.el.
 import bisect
 from cStringIO import StringIO
 import difflib
+import os
 import sys
 import traceback
 
 
 # Evaluation
 
-halp_filename = '<string>'   # Default
+source_filename = '<string>'  # Default
+
 current_line_number = None
 
 def halp(module_text):
@@ -27,12 +29,12 @@ def halp(module_text):
     return diff(output.split('\n'), input_lines)
 
 def set_up_globals(halp_object):
-    if halp_filename.endswith('.py'):
-        module_name = halp_filename[:-3]
+    if source_filename.endswith('.py'):
+        module_name = source_filename[:-3]
     else:
         module_name = '<string>'
     return {'__name__': module_name,
-            '__file__': halp_filename,
+            '__file__': source_filename,
             '__doc__': None,
             'halp': halp_object}
 
@@ -235,7 +237,7 @@ class TracebackPart:
     def format(self, lnmap):
         def fix_item((filename, lineno, name, line)):
             if filename == '<string>':
-                filename = halp_filename
+                filename = source_filename
                 line = lnmap.get_input_line(lineno)
                 lineno = lnmap.fix_lineno(lineno)
             return (filename, lineno, name, line)
@@ -285,6 +287,6 @@ def compute_diff(is_junk, a, b):
 # Main program
 
 if __name__ == '__main__':
-    if 2 <= len(sys.argv):
-        halp_filename = sys.argv[1]
+    if 2 <= len(sys.argv): source_filename = sys.argv[1]
+    if 3 <= len(sys.argv): sys.path[0] = os.path.dirname(sys.argv[2])
     sys.stdout.write(halp(sys.stdin.read()))

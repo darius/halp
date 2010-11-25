@@ -38,7 +38,7 @@
   (interactive)
   (halp-find-helpers-directory)
   (halp-py-update/diff (concat halp-helpers-directory "pyhalp.py") 
-		       (list (buffer-name (current-buffer)))))
+		       (list (buffer-name) (buffer-file-name))))
 
 (defun halp-update-javascript ()
   (interactive)
