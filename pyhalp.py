@@ -43,16 +43,16 @@ def eval_module(input, module_dict):
     output as a 'part'."""
     global current_line_number
     current_line_number = None
-    try:
-        # The "+ '\n'" seems to fix a weird bug where we'd get a
-        # syntax error sometimes if the last line was a '## ' line not
-        # ending in a newline character. I still don't understand it.
-        def thunk(): exec '\n'.join(input) + '\n' in module_dict
-        output, _ = capturing_stdout(thunk)
-    except:
+
+    # The "+ '\n'" seems to fix a weird bug where we'd get a
+    # syntax error sometimes if the last line was a '## ' line not
+    # ending in a newline character. I still don't understand it.
+    def thunk(): exec '\n'.join(input) + '\n' in module_dict
+    output, _, traceback_part, is_syn  = capturing_stdout(thunk)
+    if traceback_part is not None:
         lineno = get_lineno(sys.exc_info())
         parts = map(InputPart, input)
-        parts.insert(lineno, format_exc())
+        parts.insert(lineno, traceback_part)
     else:
         parts = []
         for i, line in enumerate(input):
@@ -68,27 +68,35 @@ def eval_module(input, module_dict):
 def eval_line(code, module_dict):
     """Given a string that may be either an expression or a statement,
     evaluate it and return a list of parts for output."""
-    try:
-        output, result = capturing_stdout(lambda: eval(code, module_dict))
-    except SyntaxError:
-        try:
-            def thunk(): exec code in module_dict
-            output, result = capturing_stdout(thunk)
-        except:
-            return [format_exc()]
-    except:
-        return [format_exc()]
+    output, result, tb, is_syn = capturing_stdout(lambda: eval(code,
+                                                               module_dict))
     parts = []
+    if tb is not None:
+        if is_syn:
+            def thunk(): exec code in module_dict
+            output, result, tb, is_syn = capturing_stdout(thunk)
     if output: parts.append(OutputPart(output))
     if result is not None: parts.append(OutputPart(repr(result)))
+    if tb is not None: parts.append(tb)
     return parts
 
 def capturing_stdout(thunk):
+    """Run thunk() and return either (output, result, None, None) or
+    (output, None, traceback_part, is_syntax_error) -- the latter if
+    thunk raised an exception."""
+    # XXX ugly interface to preserve tricky exception/traceback
+    #  capture logic to do with stack frames and line numbers.
+    #  Come back to this -- hopefully could be cleaner.
     stdout = sys.stdout
-    sys.stdout = StringIO()
+    sys.stdout = stringio = StringIO()
     try:
         result = thunk()
-        return sys.stdout.getvalue(), result
+    except SyntaxError:
+        return stringio.getvalue(), None, format_exc(), True
+    except:
+        return stringio.getvalue(), None, format_exc(), False
+    else:
+        return stringio.getvalue(), result, None, None
     finally:
         sys.stdout = stdout
 
@@ -124,6 +132,7 @@ def format_exc(limit=None):
         etype, value, tb = sys.exc_info()
         return format_exception(etype, value, tb, limit)
     finally:
+        # XXX why's this needed? why did I write it?
         etype = value = tb = None
 
 def format_exception(etype, value, tb, limit=None):
