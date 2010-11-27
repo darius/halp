@@ -54,8 +54,6 @@ check against test results (#= prefix or something)
 make up a key-command to convert the textually next output into
 a test expectation
 
-more sensible to show the result *after* the output
-
 fix: in pyhalp any stdout output isn't shown if there's an exception.
 When you have:
 def foo():

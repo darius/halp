@@ -79,8 +79,8 @@ def eval_line(code, module_dict):
     except:
         return [format_exc()]
     parts = []
-    if result is not None: parts.append(OutputPart(repr(result)))
     if output: parts.append(OutputPart(output))
+    if result is not None: parts.append(OutputPart(repr(result)))
     return parts
 
 def capturing_stdout(thunk):
