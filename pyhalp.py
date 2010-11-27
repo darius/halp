@@ -48,7 +48,7 @@ def eval_module(input, module_dict):
         # syntax error sometimes if the last line was a '## ' line not
         # ending in a newline character. I still don't understand it.
         def thunk(): exec '\n'.join(input) + '\n' in module_dict
-        _, output = capturing_stdout(thunk)
+        output, _ = capturing_stdout(thunk)
     except:
         lineno = get_lineno(sys.exc_info())
         parts = map(InputPart, input)
@@ -69,11 +69,11 @@ def eval_line(code, module_dict):
     """Given a string that may be either an expression or a statement,
     evaluate it and return a list of parts for output."""
     try:
-        result, output = capturing_stdout(lambda: eval(code, module_dict))
+        output, result = capturing_stdout(lambda: eval(code, module_dict))
     except SyntaxError:
         try:
             def thunk(): exec code in module_dict
-            result, output = capturing_stdout(thunk)
+            output, result = capturing_stdout(thunk)
         except:
             return [format_exc()]
     except:
@@ -87,7 +87,8 @@ def capturing_stdout(thunk):
     stdout = sys.stdout
     sys.stdout = StringIO()
     try:
-        return thunk(), sys.stdout.getvalue()
+        result = thunk()
+        return sys.stdout.getvalue(), result
     finally:
         sys.stdout = stdout
 
