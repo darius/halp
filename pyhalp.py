@@ -48,11 +48,11 @@ def eval_module(input, module_dict):
     # syntax error sometimes if the last line was a '## ' line not
     # ending in a newline character. I still don't understand it.
     def thunk(): exec '\n'.join(input) + '\n' in module_dict
-    output, _, traceback_part, is_syn  = capturing_stdout(thunk)
-    if traceback_part is not None:
-        lineno = get_lineno(sys.exc_info())
+    output, _, exc_info, is_syn  = capturing_stdout(thunk)
+    if exc_info is not None:
+        lineno = get_lineno(exc_info)
         parts = map(InputPart, input)
-        parts.insert(lineno, traceback_part)
+        parts.insert(lineno, format_exception(exc_info))
     else:
         parts = []
         for i, line in enumerate(input):
@@ -68,22 +68,22 @@ def eval_module(input, module_dict):
 def eval_line(code, module_dict):
     """Given a string that may be either an expression or a statement,
     evaluate it and return a list of parts for output."""
-    output, result, tb, is_syn = capturing_stdout(lambda: eval(code,
-                                                               module_dict))
-    parts = []
-    if tb is not None:
+    output, result, exc_info, is_syn = \
+        capturing_stdout(lambda: eval(code, module_dict))
+    if exc_info is not None:
         if is_syn:
             def thunk(): exec code in module_dict
-            output, result, tb, is_syn = capturing_stdout(thunk)
+            output, result, exc_info, is_syn = capturing_stdout(thunk)
+    parts = []
     if output: parts.append(OutputPart(output))
     if result is not None: parts.append(OutputPart(repr(result)))
-    if tb is not None: parts.append(tb)
+    if exc_info is not None: parts.append(format_exception(exc_info))
     return parts
 
 def capturing_stdout(thunk):
     """Run thunk() and return either (output, result, None, None) or
-    (output, None, traceback_part, is_syntax_error) -- the latter if
-    thunk raised an exception."""
+    (output, None, exc_info, is_syntax_error) -- the latter if thunk
+    raised an exception."""
     # XXX ugly interface to preserve tricky exception/traceback
     #  capture logic to do with stack frames and line numbers.
     #  Come back to this -- hopefully could be cleaner.
@@ -92,9 +92,9 @@ def capturing_stdout(thunk):
     try:
         result = thunk()
     except SyntaxError:
-        return stringio.getvalue(), None, format_exc(), True
+        return stringio.getvalue(), None, sys.exc_info(), True
     except:
-        return stringio.getvalue(), None, format_exc(), False
+        return stringio.getvalue(), None, sys.exc_info(), False
     else:
         return stringio.getvalue(), result, None, None
     finally:
@@ -126,16 +126,7 @@ class Halp:
 
 # Exception capture
 
-def format_exc(limit=None):
-    "Like traceback.format_exc() but returning a 'part'."
-    try:
-        etype, value, tb = sys.exc_info()
-        return format_exception(etype, value, tb, limit)
-    finally:
-        # XXX why's this needed? why did I write it?
-        etype = value = tb = None
-
-def format_exception(etype, value, tb, limit=None):
+def format_exception((etype, value, tb), limit=None):
     "Like traceback.format_exception() but returning a 'part'."
     exc_lines = traceback.format_exception_only(etype, value)
     exc_only = ''.join(exc_lines).rstrip('\n')
