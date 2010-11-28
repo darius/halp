@@ -157,7 +157,7 @@ def get_lineno((etype, value, tb)):
         filename, lineno, func_name, text = items[-1]
         if filename == '<string>':
             return lineno
-    return 1
+    return 0
 
 
 # Formatting output with tracebacks fixed up
