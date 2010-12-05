@@ -7,8 +7,8 @@ interactively test your programs as you write them -- like a
 read-eval-print loop, but different.
 
 To try it out, first install halp.el as described below. Then visit a
-suitable file, (like sample.py, sample.lhs, or sample.sh in this
-directory), and hit M-i. These sample files will explain what you can
+suitable file, (like sample.py, sample.lhs, or sample.sh in
+examples/), and hit M-i. These sample files will explain what you can
 do and how it works. (Actually only sample.py explains much. But for
 the other languages, currently, there's little to explain.)
 
