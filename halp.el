@@ -28,6 +28,7 @@
 (defun halp-add-hook (hook map-name key halp-update-function)
   (add-hook hook
             `(lambda ()
+               (halp-buttonize-buffer)
                (define-key ,map-name ',key ',halp-update-function))))
 
 (defun halp-update-sh ()
@@ -185,6 +186,27 @@ that outputs a diff."
 
 (defun halp-from (start)
   (buffer-substring start (point)))
+
+
+;; Hyperlinks to other files
+
+(defun halp-buttonize-buffer ()
+  "Turn each <<foo>> in the current buffer into a button."
+  (save-excursion
+    (goto-char (point-min))
+    (while (re-search-forward "<<[^<>]+>>" nil t)
+      (make-button (match-beginning 0)
+                   (match-end 0)
+                   :type 'halp-button))))
+
+(define-button-type 'halp-button
+  'follow-link t
+  'action 'halp-button-action)
+
+(defun halp-button-action (button)
+  (find-file (buffer-substring (+ (button-start button) 2)
+                               (- (button-end button) 2))))
+
 
 ;; Wrap-up
 
