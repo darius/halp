@@ -2,7 +2,7 @@
 """
 You've probably used regular expressions via Python's 're' module,
 grep, etc. We'll build them from scratch, but skipping, for now, the
-bells and whistles that'd detract from exploring the core ideas.
+bells and whistles that'd distract from the core ideas.
 
 A regular expression denotes a set of strings. We have five ways to
 build one:
@@ -33,8 +33,8 @@ match. For example, many(lit('A')) matches '', 'A', 'AA', 'AAA', and
 so on.
 
 Define a function matching_strings(re, length) that returns a set of
-all of re's matching strings of exactly the given length. I've
-supplied a skeleton and test cases below.
+all of re's matching strings of exactly the given length. Here's a
+skeleton and test cases to work from.
 """
 
 def matching_strings(re, length):
