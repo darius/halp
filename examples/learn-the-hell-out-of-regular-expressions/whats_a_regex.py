@@ -1,4 +1,4 @@
-# <<TOC.py>>   Prev: <<README.py>>   Next: <<.py>>
+# <<TOC.py>>   Prev: <<README.py>>   Next: <<trivial_match.py>>
 """
 You've probably used regular expressions via Python's 're' module,
 grep, etc. We'll build them from scratch, but skipping, for now, the
@@ -101,5 +101,9 @@ def many(re):
 
 """
 You can compare to my solution at <<whats_a_regex_soln.py>>.
+
+WRITEME exhortation to actually try and write the code yourself first,
+with quotes from Feynman, example of Turing, etc. Much of the point of
+this new medium of active essays, I'm supposing.
 """
-# <<TOC.py>>   Prev: <<README.py>>   Next: <<.py>>
+# <<TOC.py>>   Prev: <<README.py>>   Next: <<trivial_match.py>>

@@ -1,6 +1,6 @@
 # <<TOC.py>>   Prev: <<trivial_match.py>>   Next: <<>>
 """
-XXX blah blah
+WRITEME
 """
 
 from whats_a_regex_soln import *

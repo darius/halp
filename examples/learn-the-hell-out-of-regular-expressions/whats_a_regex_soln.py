@@ -1,6 +1,6 @@
-# <<TOC.py>>   Back: <<whats_a_regex.py>>   Next: <<.py>>
+# <<TOC.py>>   Back: <<whats_a_regex.py>>   Next: <<trivial_match.py>>
 """
-XXX blah blah blah
+WRITEME
 """
 
 def matching_strings(re, length):
@@ -72,4 +72,4 @@ def many(re):
 ## gen(seq(lit('A'), seq(many(alt(lit('B'), lit('C'))), lit('D'))), 5)
 #. ['ABBBD', 'ABBCD', 'ABCBD', 'ABCCD', 'ACBBD', 'ACBCD', 'ACCBD', 'ACCCD']
 
-# <<TOC.py>>   Back: <<whats_a_regex.py>>   Next: <<.py>>
+# <<TOC.py>>   Back: <<whats_a_regex.py>>   Next: <<trivial_match.py>>

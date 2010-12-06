@@ -5,4 +5,7 @@ first to start reading and playing with it.
 
 <<README.py>>
 <<whats_a_regex.py>>
+    <<whats_a_regex_soln.py>>
+<<trivial_match.py>>
+    <<trivial_match_soln.py>>
 """
