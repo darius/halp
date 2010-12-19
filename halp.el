@@ -194,7 +194,7 @@ that outputs a diff."
   "Turn each <<foo>> in the current buffer into a button."
   (save-excursion
     (goto-char (point-min))
-    (while (re-search-forward "<<[^<>]+>>" nil t)
+    (while (re-search-forward "<<[^<> ]+>>" nil t)
       (make-button (match-beginning 0)
                    (match-end 0)
                    :type 'halp-button))))
