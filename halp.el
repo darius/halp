@@ -23,6 +23,8 @@
   (halp-add-hook 'literate-haskell-mode-hook 'literate-haskell-mode-map "\M-i"
                  'halp-update-literate-haskell)
   (halp-add-hook 'javascript-mode-hook 'javascript-mode-map "\M-i"
+                 'halp-update-javascript)
+  (halp-add-hook 'js-mode-hook 'js-mode-map "\M-i"
                  'halp-update-javascript))
 
 (defun halp-add-hook (hook map-name key halp-update-function)

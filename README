@@ -28,6 +28,14 @@ You will need python-mode, or haskell-mode, etc., installed already
 (whichever of these you intend to use with Halp). You will also need
 Python >= 2.4 and Emacs 22 or 21.
 
+To build and install the JavaScript support:
+
+  1. Build V8 from http://code.google.com/p/v8/
+  2. Copy or symlink include/ and libv8.a from the directory you built
+     V8 in (probably named v8-read-only)
+  3. Run "make -f v8halp.mk"
+  4. Put the resulting v8halp binary in your $PATH.
+
 
 AUTHORS
 
