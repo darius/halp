@@ -1,37 +1,40 @@
 #!/usr/bin/env python
 """
-Run a Halp-extended .py sourcefile from stdin; write to stdout the
-same sourcefile with evaluation results placed inline.
+Run a Halp-extended .py sourcefile from stdin; write to stdout an
+encoding of the same sourcefile with evaluation results placed inline.
+The encoding is a kind of diff against the input, expected by halp.el.
 """
 
 import bisect
 from cStringIO import StringIO
 import difflib
+import os
 import sys
 import traceback
 
 
 # Evaluation
 
-halp_filename = '<string>'   # Default
+source_filename = '<string>'  # Default
+
 current_line_number = None
 
 def halp(module_text):
     """Given a module's code as a string, produce the Halp output as a
     string."""
-    input_lines = module_text.split('\n')
+    input_lines = module_text.splitlines()
     input, old_outputs = strip_old_outputs(input_lines)
     env = set_up_globals(Halp(old_outputs))
     output = format_part(eval_module(input, env))
     return diff(output.split('\n'), input_lines)
 
 def set_up_globals(halp_object):
-    if halp_filename.endswith('.py'):
-        module_name = halp_filename[:-3]
+    if source_filename.endswith('.py'):
+        module_name = source_filename[:-3]
     else:
         module_name = '<string>'
     return {'__name__': module_name,
-            '__file__': halp_filename,
+            '__file__': source_filename,
             '__doc__': None,
             'halp': halp_object}
 
@@ -40,16 +43,16 @@ def eval_module(input, module_dict):
     output as a 'part'."""
     global current_line_number
     current_line_number = None
-    try:
-        # The "+ '\n'" seems to fix a weird bug where we'd get a
-        # syntax error sometimes if the last line was a '## ' line not
-        # ending in a newline character. I still don't understand it.
-        def thunk(): exec '\n'.join(input) + '\n' in module_dict
-        _, output = capturing_stdout(thunk)
-    except:
-        lineno = get_lineno(sys.exc_info())
+
+    # The "+ '\n'" seems to fix a weird bug where we'd get a
+    # syntax error sometimes if the last line was a '## ' line not
+    # ending in a newline character. I still don't understand it.
+    def thunk(): exec '\n'.join(input) + '\n' in module_dict
+    output, _, exc_info, is_syn  = capturing_stdout(thunk)
+    if exc_info is not None:
+        lineno = get_lineno(exc_info)
         parts = map(InputPart, input)
-        parts.insert(lineno, format_exc())
+        parts.insert(lineno, format_exception(exc_info))
     else:
         parts = []
         for i, line in enumerate(input):
@@ -57,40 +60,43 @@ def eval_module(input, module_dict):
             if line.startswith('## '):
                 code = line[len('## '):]
                 current_line_number = i + 1
-                opt_part = eval_line(code, module_dict)
-                if opt_part is not None:
-                    parts.append(opt_part)
+                parts.extend(eval_line(code, module_dict))
         if output:
             parts.append(OutputPart(output))
     return CompoundPart(parts)
 
 def eval_line(code, module_dict):
     """Given a string that may be either an expression or a statement,
-    evaluate it and return a part for output, or None."""
-    try:
-        result, output = capturing_stdout(lambda: eval(code, module_dict))
-    except SyntaxError:
-        try:
+    evaluate it and return a list of parts for output."""
+    output, result, exc_info, is_syn = \
+        capturing_stdout(lambda: eval(code, module_dict))
+    if exc_info is not None:
+        if is_syn:
             def thunk(): exec code in module_dict
-            result, output = capturing_stdout(thunk)
-        except:
-            return format_exc()
-    except:
-        return format_exc()
-    if output:
-        if result is not None:
-            output = '%s\n%r' % (output, result)
-        return OutputPart(output)
-    elif result is not None:
-        return OutputPart(repr(result))
-    else:
-        return None
+            output, result, exc_info, is_syn = capturing_stdout(thunk)
+    parts = []
+    if output: parts.append(OutputPart(output))
+    if result is not None: parts.append(OutputPart(repr(result)))
+    if exc_info is not None: parts.append(format_exception(exc_info))
+    return parts
 
 def capturing_stdout(thunk):
+    """Run thunk() and return either (output, result, None, None) or
+    (output, None, exc_info, is_syntax_error) -- the latter if thunk
+    raised an exception."""
+    # XXX ugly interface to preserve tricky exception/traceback
+    #  capture logic to do with stack frames and line numbers.
+    #  Come back to this -- hopefully could be cleaner.
     stdout = sys.stdout
-    sys.stdout = StringIO()
+    sys.stdout = stringio = StringIO()
     try:
-        return thunk(), sys.stdout.getvalue()
+        result = thunk()
+    except SyntaxError:
+        return stringio.getvalue(), None, sys.exc_info(), True
+    except:
+        return stringio.getvalue(), None, sys.exc_info(), False
+    else:
+        return stringio.getvalue(), result, None, None
     finally:
         sys.stdout = stdout
 
@@ -120,15 +126,7 @@ class Halp:
 
 # Exception capture
 
-def format_exc(limit=None):
-    "Like traceback.format_exc() but returning a 'part'."
-    try:
-        etype, value, tb = sys.exc_info()
-        return format_exception(etype, value, tb, limit)
-    finally:
-        etype = value = tb = None
-
-def format_exception(etype, value, tb, limit=None):
+def format_exception((etype, value, tb), limit=None):
     "Like traceback.format_exception() but returning a 'part'."
     exc_lines = traceback.format_exception_only(etype, value)
     exc_only = ''.join(exc_lines).rstrip('\n')
@@ -159,7 +157,7 @@ def get_lineno((etype, value, tb)):
         filename, lineno, func_name, text = items[-1]
         if filename == '<string>':
             return lineno
-    return 1
+    return 0
 
 
 # Formatting output with tracebacks fixed up
@@ -187,10 +185,10 @@ class LineNumberMap:
     def add_input_line(self, line):
         self.input_lines.append(line)
     def get_input_line(self, lineno):
-        try:
-            return self.input_lines[lineno - 1]
-        except IndexError:
-            return None
+        """Tracebacks sometimes have None for the text of a line,
+        so we have to supply it ourselves."""
+        try: return self.input_lines[lineno - 1]
+        except IndexError: return None
     def count_output(self, n_lines):
         self.n_output += n_lines
         self.output_positions.append(1 + len(self.input_lines))
@@ -234,14 +232,13 @@ class TracebackPart:
         self.items = tb_items
     def count_lines(self, lnmap):
         def item_len((filename, lineno, name, line)):
-            if line:
-                return 2
-            return 1
+            if line: return 2
+            else: return 1
         lnmap.count_output(sum(map(item_len, self.items)))
     def format(self, lnmap):
         def fix_item((filename, lineno, name, line)):
             if filename == '<string>':
-                filename = halp_filename
+                filename = source_filename
                 line = lnmap.get_input_line(lineno)
                 lineno = lnmap.fix_lineno(lineno)
             return (filename, lineno, name, line)
@@ -291,6 +288,6 @@ def compute_diff(is_junk, a, b):
 # Main program
 
 if __name__ == '__main__':
-    if 2 <= len(sys.argv):
-        halp_filename = sys.argv[1]
+    if 2 <= len(sys.argv): source_filename = sys.argv[1]
+    if 3 <= len(sys.argv): sys.path[0] = os.path.dirname(sys.argv[2])
     sys.stdout.write(halp(sys.stdin.read()))

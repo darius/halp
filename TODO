@@ -1,68 +1,15 @@
-instead of '... done', indicate if there were any changes
-(so we don't have to have a cleanly-saved state at the beginning
-in order to tell)
+*********** general:
 
-get v8halp to handle & report errors from loading the file
-(not just from running each /// line)
+auto-timeout the helper-subprocess runs
 
-v8halp: prettyprint objects (not just [object Object])
+fill out test suite
 
-When you have:
-def foo():
-  print 'yay'
-  assert False
-## foo()
-There's no 'yay' before the error traceback.
-
-may be useful:
-  inspect.currentframe()/getouterframes()/getinnerframes()/getframeinfo()
-
-clean up code:
-  halp.el has some ugly bits still lying around
-  group stuff into an examples directory
-
-set the current directory for python
-
-fix: in pyhalp if the program writes to stdout, successful M-i presses
-add an extra newline in front of the output each time 
-
-fix: ghcihalp.py isn't reporting errors (or anything else) on this input:
-myzip [] [] = []
-myzip (x:xs) (x:ys) = (x, y) : (myzip xs ys)
---- myzip "hello" "world"
-
-fix: in pyhalp any stdout output isn't shown if there's an exception
-
-set PYTHONPATH (or something)
-
-don't delete old outputs if there's an error in the initial module
-loading. but do mark them somehow as no longer the current output.
-
-add doc comments to interactive elisp functions
-
-We're still getting 'File "<string>", line 14' on syntax errors.
-It looks like that message comes out of the SyntaxError exception
-rather than the traceback. I tried setting value.filename = halp_filename
-in get_lineno, but that did nothing. Come back to this.
-
-tush variant
-
-continuous halp mode: auto-rerun halp after every change to the buffer;
-but don't show changed output after these auto-reruns (too disruptive);
-instead just change the prefixes on outputs that change (to '#X ', say).
-
-move cursor to position reported by compiler error message
-
-use sys.meta_path:
-http://www.python.org/dev/peps/pep-0302/
-http://blog.dowski.com/2008/07/31/customizing-the-python-import-system/
-
-more concise/useful Python error messages
+other languages:
+  lisp
+  tush
 
 doctest support -- mark an output as 'correct', and tell me when
 there's an error
-
-single-stepping of some sort
 
 test isolation
 
@@ -72,14 +19,78 @@ syntax coloring
 
 support "literate python"? noweb?
 
-for Haskell, handle compiler error messages for example lines
-
-rewrite in elisp?
-
 insert results asynchronously; don't hang up emacs
-
-lisp support
 
 persistent process to avoid startup time, if possible
 
+clean up code:
+  halp.el has some ugly bits still lying around
+  group stuff into an examples directory
+
+wouldn't it be better to centralize the diffing in halp.el instead of
+in each helper? *tries to remember why I didn't*
+
+
+*********** halp.el:
+
+when the output changes, take the cursor to the first change,
+with the mark set so you can go back
+
+add doc comments to interactive elisp functions
+
+continuous halp mode: auto-rerun halp after every change to the buffer;
+but don't show changed output after these auto-reruns (too disruptive);
+instead just change the prefixes on outputs that change (to '#X ', say).
+
+move cursor to position reported by compiler error message
+
+
+*********** pyhalp:
+
+fix: an empty sourcefile produces a change
+
+omit the traceback if empty? (on ## lines)
+
+check against test results (#= prefix or something)
+
+make up a key-command to convert the textually next output into
+a test expectation
+
+don't delete old outputs if there's an error in the initial module
+loading. but do mark them somehow as no longer the current output.
+
+halp.print(foo) => prints the result inline at the point in the
+source it occurs (or as close as we can figure out), instead of
+being collected with the general stdout output
+
+may be useful:
+  inspect.currentframe()/getouterframes()/getinnerframes()/getframeinfo()
+
+We're still getting 'File "<string>", line 14' on syntax errors.
+It looks like that message comes out of the SyntaxError exception
+rather than the traceback. I tried setting value.filename = halp_filename
+in get_lineno, but that did nothing. Come back to this.
+
+more concise/useful Python error messages
+
+single-stepping of some sort
+
 make sure python isn't compiling pyhalp.py every time we run
+
+
+*********** v8halp:
+
+get v8halp to handle & report errors from loading the file
+(not just from running each /// line)
+
+v8halp: prettyprint objects (not just [object Object])
+
+
+*********** ghcihalp:
+
+fix: ghcihalp.py isn't reporting errors (or anything else) on this input:
+myzip [] [] = []
+myzip (x:xs) (x:ys) = (x, y) : (myzip xs ys)
+--- myzip "hello" "world"
+
+for Haskell, handle compiler error messages for example lines

@@ -23,11 +23,14 @@
   (halp-add-hook 'literate-haskell-mode-hook 'literate-haskell-mode-map "\M-i"
                  'halp-update-literate-haskell)
   (halp-add-hook 'javascript-mode-hook 'javascript-mode-map "\M-i"
+                 'halp-update-javascript)
+  (halp-add-hook 'js-mode-hook 'js-mode-map "\M-i"
                  'halp-update-javascript))
 
 (defun halp-add-hook (hook map-name key halp-update-function)
   (add-hook hook
             `(lambda ()
+               (halp-buttonize-buffer)
                (define-key ,map-name ',key ',halp-update-function))))
 
 (defun halp-update-sh ()
@@ -38,7 +41,7 @@
   (interactive)
   (halp-find-helpers-directory)
   (halp-py-update/diff (concat halp-helpers-directory "pyhalp.py") 
-		       (list (buffer-name (current-buffer)))))
+		       (list (buffer-name) (buffer-file-name))))
 
 (defun halp-update-javascript ()
   (interactive)
@@ -102,8 +105,8 @@ that outputs a diff."
                      (point-min) (point-max) command nil output nil 
                      args)))
       (cond ((zerop rc)                 ;success
-             (halp-update-current-buffer/diff output)
-             (message "Halp starting... done"))
+             (let ((status (halp-update-current-buffer/diff output)))
+               (message (concat "Halp starting... " status))))
             ((numberp rc)
              (message "Halp starting... helper process failed"))
             (t (message rc))))))
@@ -136,23 +139,26 @@ that outputs a diff."
 
 (defun halp-apply-diff (to-buffer from-buffer)
   (setq halp-argh '())
-  (save-current-buffer
-    (set-buffer from-buffer)
-    (goto-char (point-min))
-    (while (not (eobp))
-      (multiple-value-bind (lineno n-del start end) (halp-scan-chunk)
-        (halp-dbg (list 'chunk lineno n-del start end))
-        (set-buffer to-buffer)
-        (goto-line lineno)
-        (when (and (eobp) (/= (preceding-char) 10))
-          ; No newline at end of buffer; add it. Otherwise the
-          ; code below will delete the last line.
-          (insert-char 10 1))
-        (multiple-value-bind (start1 end1) (halp-scan-lines n-del)
-          (delete-region start1 end1)
-          (halp-dbg (list 'deleted n-del start1 end1)))
-        (insert-buffer-substring from-buffer start end)
-        (set-buffer from-buffer)))))
+  (let ((status "ok"))
+    (save-current-buffer
+      (set-buffer from-buffer)
+      (goto-char (point-min))
+      (while (not (eobp))
+        (multiple-value-bind (lineno n-del start end) (halp-scan-chunk)
+          (setq status "changed")
+          (halp-dbg (list 'chunk lineno n-del start end))
+          (set-buffer to-buffer)
+          (goto-line lineno)
+          (when (and (eobp) (/= (preceding-char) 10))
+            ;; No newline at end of buffer; add it. Otherwise the
+            ;; code below will delete the last line.
+            (insert-char 10 1))
+          (multiple-value-bind (start1 end1) (halp-scan-lines n-del)
+            (delete-region start1 end1)
+            (halp-dbg (list 'deleted n-del start1 end1)))
+          (insert-buffer-substring from-buffer start end)
+          (set-buffer from-buffer))))
+    status))
 
 (defun halp-dbg (x)
   (setq halp-argh (cons x halp-argh)))
@@ -182,6 +188,27 @@ that outputs a diff."
 
 (defun halp-from (start)
   (buffer-substring start (point)))
+
+
+;; Hyperlinks to other files
+
+(defun halp-buttonize-buffer ()
+  "Turn each <<foo>> in the current buffer into a button."
+  (save-excursion
+    (goto-char (point-min))
+    (while (re-search-forward "<<[^<> ]+>>" nil t)
+      (make-button (match-beginning 0)
+                   (match-end 0)
+                   :type 'halp-button))))
+
+(define-button-type 'halp-button
+  'follow-link t
+  'action 'halp-button-action)
+
+(defun halp-button-action (button)
+  (find-file (buffer-substring (+ (button-start button) 2)
+                               (- (button-end button) 2))))
+
 
 ;; Wrap-up
 
