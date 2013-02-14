@@ -100,9 +100,8 @@ def capturing_stdout(thunk):
     finally:
         sys.stdout = stdout
 
-
-# Halp "system-call interface"
-# This lets you feed back your command's previous output with 'halp.read()'.
+## strip_old_outputs('hello\n#. world\n#. universe'.split('\n'))
+#. (['hello'], {1: ['world', 'universe']})
 
 def strip_old_outputs(input_lines):
     stripped = []
@@ -114,8 +113,9 @@ def strip_old_outputs(input_lines):
             stripped.append(line)
     return stripped, old_outputs
 
-## strip_old_outputs('hello\n#. world\n#. universe'.split('\n'))
-#. (['hello'], {1: ['world', 'universe']})
+
+# Halp "system-call interface"
+# This lets you feed back your command's previous output with 'halp.read()'.
 
 class Halp:
     def __init__(self, old_outputs):
