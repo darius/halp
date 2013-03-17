@@ -17,9 +17,10 @@ INSTALLING
 
 Add this line to your .emacs:
 
-  (load-file "/path/to/halp.el")
+  (load-file "/path/to/this/directory/halp.el")
 
-or just do M-x load-file halp.el.
+or just do M-x load-file halp.el. (Where /path/to/this/directory/ is 
+where this README file and the rest of Halp resides.)
 
 It will bind M-i in the modes that Halp supports. (Edit halp.el if you
 want to change this.)
