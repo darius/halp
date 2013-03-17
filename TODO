@@ -1,5 +1,7 @@
 *********** general:
 
+make an emacs package now that emacs has a package system
+
 auto-timeout the helper-subprocess runs
 
 fill out test suite
