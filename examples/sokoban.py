@@ -1,11 +1,12 @@
 """
-Prototype of a Sokoban game. It's missing the UI loop that reads keys
-and updates the screen, etc.; but you can still test it interactively
-inside Halp, and that's how I developed it. Here we see it after 
-everything's working and I've played a whole game through.
+Prototype of a Sokoban game. It's missing the main program that
+would load a starting board, read keys, update the screen, etc.; but
+you can still test it interactively inside Halp, and that's how I
+developed it. Here we see it at the point it's working and I've played
+a whole game through.
 """
 
-# Read an initial board state, and display it: should leave it unchanged:
+# Read an initial board state, and display it -- should leave it unchanged:
 
 ## print unparse(parse(halp.read())),
 #. # # # # # # #
@@ -40,9 +41,12 @@ everything's working and I've played a whole game through.
 #. WIN
 
 def transform(keystrokes, board):
+    "Scaffolding for the above Halp stuff."
     b = parse(board)
     push(b, cmds[keystrokes[-1:]])
     return unparse(b)
+
+# The Sokoban program proper
 
 def up   ((width, grid)): return -width
 def down ((width, grid)): return  width
