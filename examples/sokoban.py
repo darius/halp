@@ -22,7 +22,8 @@ everything's working and I've played a whole game through.
 # board. Continuing with more keystrokes (making it 'dd', then 'ddl',
 # 'ddlu', ...) and hitting M-i after each addition, I played the game
 # (albeit clumsily). After the last M-i, the final line below changed
-# to 'WIN'.
+# to 'WIN'. (You can keep hitting M-i with no change at this point because
+# 'd' for down is blocked in this position.)
 
 ## keystrokes = halp.read(); print keystrokes,
 #. ddlurrddrruullrrdluld
