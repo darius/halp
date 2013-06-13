@@ -48,13 +48,6 @@ def transform(keystrokes, board):
 
 # The Sokoban program proper
 
-def up   ((width, grid)): return -width
-def down ((width, grid)): return  width
-def left ((width, grid)): return -2
-def right((width, grid)): return  2
-
-cmds = dict(u=up, d=down, l=left, r=right)
-
 def parse(board):
     lines = [line.strip() for line in board.splitlines()]
     assert lines and all(len(line) == len(lines[0]) for line in lines)
@@ -64,32 +57,44 @@ def unparse((width, grid)):
     return '\n'.join(''.join(grid[i:i+width])
                      for i in range(0, len(grid), width))
 
+def up   ((width, grid)): return -width
+def down ((width, grid)): return  width
+def left ((width, grid)): return -2
+def right((width, grid)): return  2
+
+cmds = dict(u=up, d=down, l=left, r=right)
+
 def push(board, dir):
+    "Update board, trying to move the actor in the direction."
     d = dir(board)
-    i = find_you(board)
-    width, grid = board
+    _, grid = board
     g = ''.join(grid)
+    i = find_me(g)
     a, b, c = push_squares(g[i], g[i+d], g[i+2*d:i+2*d+1])
     grid[i], grid[i+d], grid[i+2*d:i+2*d+1] = a, b, c
 
-def find_you((width, grid)):
-    g = ''.join(grid)
+def find_me(g):
+    "Return the actor's index in the board's array."
     return g.index('i' if 'i' in g else 'I')
 
 def push_squares(a, b, c):
+    """Given the actor, its neighbor in the direction to move, and the
+    next square in that direction, return new values for the same
+    squares after trying to move."""
     b, c = move(block, b, c)
-    a, b = move(you, a, b)
+    a, b = move(me, a, b)
     return a, b, c
 
 def move(thing, src, dst):
+    "Move thing from src to dst if possible, or leave them unchanged."
     if has(thing, src) and has(space, dst):
         src, dst = lift(thing, src), drop(thing, dst)
     return src, dst
 
 space = (' ', '.')
 block = ('o', '@')
-you   = ('i', 'I')
+me    = ('i', 'I')
 
-def has((on_space, on_target), s):  return s in (on_space, on_target)
+def has ((on_space, on_target), s): return s in (on_space, on_target)
 def lift((on_space, on_target), s): return {on_space: ' ', on_target: '.'}[s]
 def drop((on_space, on_target), s): return {' ': on_space, '.': on_target}[s]
