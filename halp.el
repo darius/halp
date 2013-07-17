@@ -207,8 +207,7 @@ a ;;. comment after one, replace it with one holding the result."
         (goto-char next-pos)
         (let ((result (eval (preceding-sexp))))
           (skip-chars-forward " \t\n")
-          (when 
-              (looking-at ";;\\. ")
+          (when (looking-at ";;\\. ")
             (delete-region (point) (save-excursion (forward-line 1) (point)))
             (insert ";;. ")
             (let ((standard-output (current-buffer)))
