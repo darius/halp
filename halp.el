@@ -25,7 +25,11 @@
   (halp-add-hook 'javascript-mode-hook 'javascript-mode-map "\M-i"
                  'halp-update-javascript)
   (halp-add-hook 'js-mode-hook 'js-mode-map "\M-i"
-                 'halp-update-javascript))
+                 'halp-update-javascript)
+;  (halp-add-hook 'emacs-lisp-mode-hook
+;                 'emacs-lisp-mode-map "\M-i"
+;                 'halp-update-emacs-lisp)
+  )
 
 (defun halp-add-hook (hook map-name key halp-update-function)
   (add-hook hook
@@ -188,6 +192,28 @@ that outputs a diff."
 
 (defun halp-from (start)
   (buffer-substring start (point)))
+
+
+;; Halp for elisp
+
+(defun halp-update-emacs-lisp ()
+  "Run all Emacs Lisp expressions in a buffer, and where there's
+a ;;. comment after one, replace it with one holding the result."
+  (interactive)
+  (save-excursion
+    (goto-char (point-min))
+    (let (next-pos)
+      (while (setq next-pos (scan-sexps (point) 1))
+        (goto-char next-pos)
+        (let ((result (eval (preceding-sexp))))
+          (skip-chars-forward " \t\n")
+          (when 
+              (looking-at ";;\\. ")
+            (delete-region (point) (save-excursion (forward-line 1) (point)))
+            (insert ";;. ")
+            (let ((standard-output (current-buffer)))
+              (prin1 result))
+            (insert "\n")))))))
 
 
 ;; Hyperlinks to other files
