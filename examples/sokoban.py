@@ -18,13 +18,14 @@ a whole game through.
 #. # # # # # # #
 
 # Below, I play through a game. At first the board was a copy of the
-# initial board above, and the keystrokes line was empty. Then I added
-# a keystroke ('d') and hit M-i to evaluate, and it updated the
-# board. Continuing with more keystrokes (making it 'dd', then 'ddl',
-# 'ddlu', ...) and hitting M-i after each addition, I played the game
-# (albeit clumsily). After the last M-i, the final line below changed
-# to 'WIN'. (You can keep hitting M-i with no change at this point because
-# 'd' for down is blocked in this position.)
+# initial board above, and the keystrokes line below was empty. Then I
+# added a keystroke ('d') to the keystrokes line and hit M-i to
+# evaluate, and it updated the board. Continuing with more keystrokes
+# (making it 'dd', then 'ddl', 'ddlu', ...) and hitting M-i after each
+# addition, I played the game (albeit clumsily). After the last M-i,
+# the final line further below changed to 'WIN'. (You can keep hitting
+# M-i with no change now because 'd' for down is blocked in this
+# position.)
 
 ## keystrokes = halp.read(); print keystrokes,
 #. ddlurrddrruullrrdluld
