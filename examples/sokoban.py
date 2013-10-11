@@ -88,7 +88,7 @@ def push_squares(a, b, c):
 
 def move(thing, src, dst):
     "Move thing from src to dst if possible, or leave them unchanged."
-    if has(thing, src) and has(space, dst):
+    if src in thing and dst in space:
         src, dst = lift(thing, src), drop(thing, dst)
     return src, dst
 
@@ -96,6 +96,5 @@ space = (' ', '.')
 block = ('o', '@')
 me    = ('i', 'I')
 
-def has ((on_space, on_target), s): return s in (on_space, on_target)
 def lift((on_space, on_target), s): return {on_space: ' ', on_target: '.'}[s]
 def drop((on_space, on_target), s): return {' ': on_space, '.': on_target}[s]
