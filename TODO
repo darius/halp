@@ -49,10 +49,6 @@ move cursor to position reported by compiler error message
 
 *********** pyhalp:
 
-fix: an empty sourcefile produces a change
-
-omit the traceback if empty? (on ## lines)
-
 check against test results (#= prefix or something)
 
 make up a key-command to convert the textually next output into

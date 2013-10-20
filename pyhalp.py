@@ -26,7 +26,7 @@ def halp(module_text):
     input, old_outputs = strip_old_outputs(input_lines)
     env = set_up_globals(Halp(old_outputs))
     output = format_part(eval_module(input, env))
-    return diff(output.split('\n'), input_lines)
+    return diff(output.splitlines(), input_lines)
 
 def set_up_globals(halp_object):
     if source_filename.endswith('.py'):
@@ -130,10 +130,13 @@ def format_exception((etype, value, tb), limit=None):
     "Like traceback.format_exception() but returning a 'part'."
     exc_lines = traceback.format_exception_only(etype, value)
     exc_only = ''.join(exc_lines).rstrip('\n')
-    parts = [OutputPart('Traceback (most recent call last):'),
-             TracebackPart(extract_censored_tb(tb, limit)),
-             OutputPart(exc_only)]
-    return CompoundPart(parts)
+    items = extract_censored_tb(tb, limit)
+    if items:
+        return CompoundPart([OutputPart('Traceback (most recent call last):'),
+                             TracebackPart(items),
+                             OutputPart(exc_only)])
+    else:
+        return OutputPart(exc_only)
 
 def extract_censored_tb(tb, limit=None):
     """Like traceback.extract_tb() but with Halp internals
@@ -166,7 +169,7 @@ def format_part(part):
     "Return part expanded into a string, with line numbers corrected."
     lnmap = LineNumberMap()
     part.count_lines(lnmap)
-    return part.format(lnmap)
+    return '\n'.join(part.format(lnmap))
 
 class LineNumberMap:
     "Tracks line-number changes and applies them to old line numbers."
@@ -174,14 +177,12 @@ class LineNumberMap:
         self.input_lines = []
         self.output_positions = [0] # The line numbers where output is inserted
         self.fixups = [0]
-        self.n_output = 0
-        # self.fixups[i] is the difference between new and old line
-        # numbers for old line numbers in the range
+        # self.fixups[i] is the count of all output lines preceding input lines
+        # numbered in the range
         #   self.output_positions[i] < lineno <= self.output_positions[i+1]
         # Invariant:
         #   len(self.output_positions) == len(self.fixups)
         #   self.output_positions is sorted
-        #   self.n_output == sum(self.fixups)
     def add_input_line(self, line):
         self.input_lines.append(line)
     def get_input_line(self, lineno):
@@ -190,9 +191,8 @@ class LineNumberMap:
         try: return self.input_lines[lineno - 1]
         except IndexError: return None
     def count_output(self, n_lines):
-        self.n_output += n_lines
         self.output_positions.append(1 + len(self.input_lines))
-        self.fixups.append(self.n_output)
+        self.fixups.append(self.fixups[-1] + n_lines)
     def fix_lineno(self, lineno):
         i = bisect.bisect_right(self.output_positions, lineno) - 1
         return lineno + self.fixups[i]
@@ -205,7 +205,7 @@ class CompoundPart:
         for part in self.parts:
             part.count_lines(lnmap)
     def format(self, lnmap):
-        return '\n'.join(part.format(lnmap) for part in self.parts)
+        return sum((part.format(lnmap) for part in self.parts), [])
 
 class InputPart:
     "An input line, passed to the output unchanged."
@@ -214,16 +214,16 @@ class InputPart:
     def count_lines(self, lnmap):
         lnmap.add_input_line(self.text)
     def format(self, lnmap):
-        return self.text
+        return [self.text]
 
 class OutputPart:
     "Some output lines, with a #. prefix."
     def __init__(self, text):
-        self.text = text
+        self.lines = text.splitlines()
     def count_lines(self, lnmap):
-        lnmap.count_output(1 + self.text.count('\n'))
+        lnmap.count_output(len(self.lines))
     def format(self, lnmap):
-        return format_result(self.text)
+        return ['#. ' + line for line in self.lines]
 
 class TracebackPart:
     """An output traceback with a #. prefix and with the stack frames
@@ -232,6 +232,7 @@ class TracebackPart:
         self.items = tb_items
     def count_lines(self, lnmap):
         def item_len((filename, lineno, name, line)):
+            # XXX how to make sure this count is consistent with format_traceback()?
             if line: return 2
             else: return 1
         lnmap.count_output(sum(map(item_len, self.items)))
@@ -242,15 +243,12 @@ class TracebackPart:
                 line = lnmap.get_input_line(lineno)
                 lineno = lnmap.fix_lineno(lineno)
             return (filename, lineno, name, line)
-        return format_result(format_traceback(map(fix_item, self.items)))
-
-def format_result(s):
-    "Prefix each line of s with '#. '."
-    return '#. %s' % s.replace('\n', '\n#. ')
+        return format_traceback(map(fix_item, self.items))
 
 def format_traceback(tb_items):
     "Turn a list of traceback items into a string."
-    return ''.join(traceback.format_list(tb_items)).rstrip('\n')
+    return ['#. ' + line.rstrip('\n').replace('\n', '\n#. ')
+            for line in traceback.format_list(tb_items)]
 
 
 # Producing a diff between input and output

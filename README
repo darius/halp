@@ -27,7 +27,7 @@ want to change this.)
 
 You will need python-mode, or haskell-mode, etc., installed already
 (whichever of these you intend to use with Halp). You will also need
-Python >= 2.4 and Emacs 22 or 21.
+Python >= 2.5 and Emacs >= 21.
 
 To build and install the JavaScript support:
 
