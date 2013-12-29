@@ -77,7 +77,7 @@ def find_me(grid):
     return grid.index('i' if 'i' in grid else 'I')
 
 def move(grid, thing, src, dst):
-    "Move thing from src to dst if possible, or leave them unchanged."
+    "Move thing from src to dst if possible."
     # N.B. dst is always in bounds when grid[src] in thing because our
     # boards have '#'-borders.
     if grid[src] in thing and grid[dst] in ' .':
