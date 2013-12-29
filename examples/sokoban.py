@@ -3,7 +3,7 @@ Prototype of a Sokoban game. It's missing the main program that
 would load a starting board, read keys, update the screen, etc.; but
 you can still test it interactively inside Halp, and that's how I
 developed it. Here we see it at the point it's working and I've played
-a whole game through.
+a whole game through. (And then I simplified the code.)
 """
 
 # Read an initial board state, and display it -- should leave it unchanged:
@@ -28,13 +28,13 @@ a whole game through.
 # position.)
 
 ## keystrokes = halp.read(); print keystrokes,
-#. ddlurrddrruullrrdluld
+#. ddlurrddrruullrdrdl
 ## board = transform(keystrokes, halp.read()); print board,
 #. # # # # # # #
 #. # @     #   #
 #. #   @       #
-#. #     i     #
-#. #   @ @     #
+#. #           #
+#. #   @ @ i   #
 #. #     @     #
 #. # # # # # # #
 
@@ -65,36 +65,29 @@ def right((width, grid)): return  2
 
 cmds = dict(u=up, d=down, l=left, r=right)
 
-def push(board, dir):
-    "Update board, trying to move the actor in the direction."
-    d = dir(board)
-    _, grid = board
-    g = ''.join(grid)
-    i = find_me(g)
-    a, b, c = push_squares(g[i], g[i+d], g[i+2*d:i+2*d+1])
-    grid[i], grid[i+d], grid[i+2*d:i+2*d+1] = a, b, c
+def push((width, grid), direction):
+    "Update board, trying to move the player in the direction."
+    i = find_me(grid)
+    d = direction((width, grid))
+    move(grid, 'o@', i+d, i+d+d)
+    move(grid, 'iI', i, i+d)
 
-def find_me(g):
-    "Return the actor's index in the board's array."
-    return g.index('i' if 'i' in g else 'I')
+def find_me(grid):
+    "Return the player's index in the board's array."
+    return grid.index('i' if 'i' in grid else 'I')
 
-def push_squares(a, b, c):
-    """Given the actor, its neighbor in the direction to move, and the
-    next square in that direction, return new values for the same
-    squares after trying to move."""
-    b, c = move(block, b, c)
-    a, b = move(me, a, b)
-    return a, b, c
-
-def move(thing, src, dst):
+def move(grid, thing, src, dst):
     "Move thing from src to dst if possible, or leave them unchanged."
-    if src in thing and dst in space:
-        src, dst = lift(thing, src), drop(thing, dst)
-    return src, dst
+    # N.B. dst is always in bounds when grid[src] in thing because our
+    # boards have '#'-borders.
+    if grid[src] in thing and grid[dst] in ' .':
+        clear(grid, src)
+        drop(grid, dst, thing)
 
-space = (' ', '.')
-block = ('o', '@')
-me    = ('i', 'I')
+def clear(grid, i):
+    "Remove any thing (box or player) from position i."
+    grid[i] = ' .'[grid[i] in '.@I']
 
-def lift((on_space, on_target), s): return {on_space: ' ', on_target: '.'}[s]
-def drop((on_space, on_target), s): return {' ': on_space, '.': on_target}[s]
+def drop(grid, i, thing):
+    "At a clear position, put thing."
+    grid[i] = thing['.' == grid[i]]
