@@ -131,7 +131,7 @@ that outputs a diff."
   ;; we'll soon want to update things more intelligently.
   (let ((p (point)))
     (erase-buffer)
-    (insert-buffer output)
+    (insert-buffer output)    ;XXX change to insert-buffer-substring ? the difference seems to be saving in the mark
     (goto-char p)))
 
 (defun halp-update-current-buffer/diff (output)

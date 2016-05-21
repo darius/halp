@@ -35,6 +35,8 @@ in each helper? *tries to remember why I didn't*
 
 *********** halp.el:
 
+(defconst selectric-files-path (file-name-directory load-file-name))
+
 when the output changes, take the cursor to the first change,
 with the mark set so you can go back
 
