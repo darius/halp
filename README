@@ -15,6 +15,11 @@ the other languages, currently, there's little to explain.)
 
 INSTALLING
 
+(NOTE: the Python Halp was written for Python 2, and hasn't been ported
+to Py3 yet. Probably not hard (pyhalp.py is <300 lines) but I'm lazy.
+As for the JS/Haskell/sh halps, consider them old demos because I
+haven't been using them. The Python I do use often, as of 2023.)
+
 Add this line to your .emacs:
 
   (load-file "/path/to/this/directory/halp.el")
