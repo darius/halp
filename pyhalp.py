@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
 """
 Run a Halp-extended .py sourcefile from stdin; write to stdout an
 encoding of the same sourcefile with evaluation results placed inline.
