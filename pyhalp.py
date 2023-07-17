@@ -175,7 +175,25 @@ def get_lineno(exc):
     return 0
 
 
-# Formatting output with tracebacks fixed up
+# Formatting output with tracebacks fixed up.
+# 
+# The problem: we want to get useful tracebacks as in an ordinary Python REPL.
+# But when we insert outputs and errors into the halped *source* file, the line
+# numbers in the tracebacks get out of sync with the source lines.
+# 
+# It'd be nice if the eval/exec above could take inputs whose line
+# numbers were already correct; but this implies two subproblems:
+#   1. Getting these line numbers into the eval/exec inputs.
+#      (You could hack it: prefix k-1 newlines to the string we're evaling for line k.)
+#   2. What if a traceback from evaluating a `## ` line references
+#      lines in the overall module which appear *after* the traceback
+#      (whose length might differ from that of the previous '#. ' output)?
+#      This problem might be hackable too by re-evaluating and hoping the
+#      length stays the same, but ehhh forget it.
+#
+# So, every exec/eval will appear to Python to be starting at line 1,
+# and then here we correct the line numbers in the tracebacks. The
+# correction pass waits until after all outputs have been collected.
 
 def format_part(part):
     "Return part expanded into a string, with line numbers corrected."
