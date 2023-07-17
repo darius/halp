@@ -1,12 +1,17 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 """
 Run a Halp-extended .py sourcefile from stdin; write to stdout an
 encoding of the same sourcefile with evaluation results placed inline.
 The encoding is a kind of diff against the input, expected by halp.el.
 """
 
+# We want this module to work in either Python 2 or 3. Thus this awkwardness:
+try:
+    from cStringIO import StringIO
+except ModuleNotFoundError:
+    from io import StringIO
+
 import bisect
-from cStringIO import StringIO
 import difflib
 import os
 import sys
@@ -47,7 +52,7 @@ def eval_module(input, module_dict):
     # The "+ '\n'" seems to fix a weird bug where we'd get a
     # syntax error sometimes if the last line was a '## ' line not
     # ending in a newline character. I still don't understand it.
-    def thunk(): exec '\n'.join(input) + '\n' in module_dict
+    def thunk(): exec('\n'.join(input) + '\n', module_dict)
     output, _, exc_info, is_syn  = capturing_stdout(thunk)
     if exc_info is not None:
         lineno = get_lineno(exc_info)
@@ -71,8 +76,13 @@ def eval_line(code, module_dict):
     output, result, exc_info, is_syn = \
         capturing_stdout(lambda: eval(code, module_dict))
     if exc_info is not None:
+        # If a line failed to parse as an expression, it might be the
+        # line was meant as a statement. (Properly we should first try
+        # to *parse* instead of *eval*, above. XXX Distinguishing them
+        # in this way instead is a lazy hack which will misbehave in
+        # rare cases.)
         if is_syn:
-            def thunk(): exec code in module_dict
+            def thunk(): exec(code, module_dict)
             output, result, exc_info, is_syn = capturing_stdout(thunk)
     parts = []
     if output: parts.append(OutputPart(output))
@@ -126,8 +136,9 @@ class Halp:
 
 # Exception capture
 
-def format_exception((etype, value, tb), limit=None):
+def format_exception(exc, limit=None):
     "Like traceback.format_exception() but returning a 'part'."
+    (etype, value, tb) = exc
     exc_lines = traceback.format_exception_only(etype, value)
     exc_only = ''.join(exc_lines).rstrip('\n')
     items = extract_censored_tb(tb, limit)
@@ -151,8 +162,9 @@ def extract_censored_tb(tb, limit=None):
             items[0] = filename, current_line_number, func_name, None
     return items
 
-def get_lineno((etype, value, tb)):
+def get_lineno(exc):
     "Return the line number where this exception should be reported."
+    (etype, value, tb) = exc
     if isinstance(value, SyntaxError) and value.filename == '<string>':
         return value.lineno
     items = traceback.extract_tb(tb)
@@ -231,13 +243,15 @@ class TracebackPart:
     def __init__(self, tb_items):
         self.items = tb_items
     def count_lines(self, lnmap):
-        def item_len((filename, lineno, name, line)):
+        def item_len(item):
+            (filename, lineno, name, line) = item
             # XXX how to make sure this count is consistent with format_traceback()?
             if line: return 2
             else: return 1
         lnmap.count_output(sum(map(item_len, self.items)))
     def format(self, lnmap):
-        def fix_item((filename, lineno, name, line)):
+        def fix_item(item):
+            (filename, lineno, name, line) = item
             if filename == '<string>':
                 filename = source_filename
                 line = lnmap.get_input_line(lineno)

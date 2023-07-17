@@ -15,10 +15,8 @@ the other languages, currently, there's little to explain.)
 
 INSTALLING
 
-(NOTE: the Python Halp was written for Python 2, and hasn't been ported
-to Py3 yet. Probably not hard (pyhalp.py is <300 lines) but I'm lazy.
-As for the JS/Haskell/sh halps, consider them old demos because I
-haven't been using them. The Python I do use often, as of 2023.)
+(NOTE: While the Python Halp is in active use as of 2023, the others
+should be considered old demos and no more.)
 
 Add this line to your .emacs:
 
@@ -30,9 +28,9 @@ where this README file and the rest of Halp resides.)
 It will bind M-i in the modes that Halp supports. (Edit halp.el if you
 want to change this.)
 
-You will need python-mode, or haskell-mode, etc., installed already
-(whichever of these you intend to use with Halp). You will also need
-Python >= 2.5 and Emacs >= 21.
+You'll need python-mode, or haskell-mode, etc., installed already
+(whichever of these you intend to use with Halp). You'll also need
+Emacs >= 21. Python 2 and 3 are both supported.
 
 To build and install the JavaScript support:
 

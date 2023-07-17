@@ -22,7 +22,7 @@ def fact(n):
 
 # Your ## lines can be statements, too:
 
-## print 'hello\nworld'
+## print('hello\nworld')
 
 # If they raise exceptions, a traceback appears:
 
