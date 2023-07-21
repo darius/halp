@@ -8,6 +8,9 @@
 (defvar halp-helpers-directory nil
   "Directory where Halp helper scripts are installed.")
 
+(defvar halp-python-command "python"
+  "Name of the Python program on your system.")
+
 
 ;; The rest of this file shouldn't need editing.
 
@@ -62,7 +65,8 @@
 
 (defun halp-py-update-relative (command args)
   (halp-find-helpers-directory)
-  (halp-update "python" (cons (concat halp-helpers-directory command) args)))
+  (halp-update halp-python-command
+               (cons (concat halp-helpers-directory command) args)))
 
 (defun halp-update-relative (command args)
   (halp-find-helpers-directory)
@@ -97,7 +101,7 @@ loaded from, if it's not yet initialized."
             (t (message rc))))))
 
 (defun halp-py-update/diff (command args)
-  (halp-update/diff "python" (cons command args)))
+  (halp-update/diff halp-python-command (cons command args)))
 
 (defun halp-update/diff (command args)
   "Update the current buffer using an external helper program
