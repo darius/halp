@@ -56,7 +56,7 @@ def eval_module(input, module_dict):
     output, _, exc_info, is_syn  = capturing_stdout(thunk)
     if exc_info is not None:
         lineno = get_lineno(exc_info)
-        parts = map(InputPart, input)
+        parts = list(map(InputPart, input))
         parts.insert(lineno, format_exception(exc_info))
     else:
         parts = []
